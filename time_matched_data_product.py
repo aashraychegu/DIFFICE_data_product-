@@ -13,7 +13,7 @@ import numpy as np
 
 tout = tqdm.write
 
-data_product_name = "time_matched_bedmap_icesat2"
+data_product_name = "only_icesat2"
 
 cwd = Path(".").resolve()
 config_path = cwd / "shelves.toml"
@@ -26,7 +26,7 @@ imgs_save_dir = imgs_dir / data_product_name
 imgs_save_dir.mkdir(exist_ok=True)
 
 config_only = False
-if len(argv) == 2:
+if len(argv) == 2 and argv[1] == "yaml":
     config_only = True
     for file in output_location.glob("*.yaml"):
         file.unlink(missing_ok = True)
@@ -47,21 +47,22 @@ shelf_names = list(shelf_to_bbox.keys())
 time_mappings = {
         "1":{
             "velocity": ["velocity_1995-2001.nc"],
-            "thickness": ["thickness_1995-2001.nc", "bedmap3_1995_2001.parquet", ]
+            "thickness": ["thickness_1995-2001.nc", "bedmap3_1995_2001.parquet", "bedmap3.parquet",]
             },
         "2":{
             "velocity" : ["velocity_2007-2009.nc"],
-            "thickness": ["thickness_2007-2009.nc", "bedmap3_2007_2009.parquet"] 
+            "thickness": ["thickness_2007-2009.nc", "bedmap3_2007_2009.parquet", "bedmap3.parquet",] 
             },
         "3":{
             "velocity" : ["velocity_2014-2017.nc"],
-            "thickness": ["thickness_2014-2017.nc",  "bedmap3_2014_2017.parquet", ] 
+            "thickness": ["thickness_2014-2017.nc",  "bedmap3_2014_2017.parquet", "bedmap3.parquet",] 
             },
         "4":{
             "velocity" : ["velocity_2020-2022.nc"],
             "thickness": ["interp_thickness_2020-2022.nc", "thickness_bm4.nc", "bedmap3.parquet", "icesat.nc"] 
             },
     }
+
 
 method_reference = dict(
         netcdf = dict(load = load_netcdf,  flatten = flatten_netcdf),
@@ -92,7 +93,8 @@ for thickness_file in (pbar:=tqdm(thickness_files)):
     source_type = get_dataset_type(thickness_file)
     source = method_reference[source_type]["load"](thickness_file_path)
     thickness_datasources[thickness_file] = dict(source = source, function = method_reference[source_type]["flatten"])
-pbar.set_description("All thickness files loaded.")
+else:
+    pbar.set_description("All thickness files loaded.")
 
 velocity_ncs = {}
 # pyrefly: ignore [invalid-syntax]
@@ -105,14 +107,15 @@ for velocity_filename in (pbar := tqdm(velocity_files)):
     velocity_nc["VY"] = velocity_nc["VY"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
     velocity_nc["MASK"] = velocity_nc["MASK"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
     velocity_ncs[velocity_name] = velocity_nc.rio.write_crs("EPSG:3031")
-pbar.set_description("All velocity files loaded.")
+else:
+    pbar.set_description("All velocity files loaded.")
 
 triplets = []
-for shelf_name, time_mapping in product(shelf_names,time_mappings.values()):
+for shelf_name, time_mapping in tqdm(product(shelf_names,time_mappings.values())):
     for velocity_file, thickness_file in product(time_mapping["velocity"],time_mapping["thickness"]):
         triplets.append((shelf_name, velocity_file, thickness_file))
 
-print(f"Generated {len(triplets)} triplets \n {'---'*30}")
+print(f"Generated {len(triplets)} triplets \n{'---'*30}")
 
 # pyrefly: ignore [invalid-syntax]
 for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets, desc = f"Processing {len(triplets)} triplets:")):
@@ -138,4 +141,5 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
         "data.source" : f"/oak/stanford/groups/cyaolai/AashrayChegu/data-product/product/{data_product_name}/{name}.mat",
         "name" : f"{name}",
     }
-    patch_config(template = template_dir / "template.yaml", patches = patches, save_path=output_location / f"{name}.yaml", )
+    if Path(patches["data.source"]).exists():
+        patch_config(template = template_dir / "template.yaml", patches = patches, save_path=output_location / f"{name}.yaml", )
