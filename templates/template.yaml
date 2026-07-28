@@ -1,0 +1,55 @@
+name: ~
+workflow: ice-shelf-only
+
+runtime:
+  jax_platform: gpu
+  precision: double
+  jax_compilation_cache_dir: /oak/stanford/groups/cyaolai/AashrayChegu/cache
+  jax_enable_compilation_cache: true
+  jax_explain_cache_misses: false
+  jax_persistent_cache_min_compile_time_secs: 0
+  jax_persistent_cache_min_entry_size_bytes: -1
+  jax_persistent_cache_enable_xla_caches: xla_gpu_per_fusion_autotune_cache_dir
+  jax_compilation_cache_include_metadata_in_key: true  
+  
+data:
+  source: ~
+  sampling_counts:
+    velocity_data: 1024
+    thickness_data: 1024
+    surface_data: null
+    collocation: 2048
+    calving_front: 256
+  collocation_library_size: full
+
+model:
+  workflow: pinn
+  network:
+    depth: 6
+    width: 30
+    embedding: false
+    embed_n: 10
+    embed_std: 1.0
+
+equation:
+  name: ssa_iso
+
+loss:
+  name: iso
+  weights: [1.0, 0.05, 0.1]
+
+training:
+  seed: 1234
+  stages:
+    - optimizer:
+        name: kfac
+        learning_rate: null
+        damping: .nan
+        parameters:
+          preset: xpinn_joint_inversion_reference
+          log_rate: 20
+      iterations: 10000
+      adaptive_sampling: false
+
+artifacts:
+  output_dir: ~

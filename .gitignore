@@ -1,0 +1,10 @@
+data/*
+imgs/*
+cache/*
+product
+product/*
+product/*/*
+product/*/*.yaml
+product/**/*.yaml
+product/**
+*.mat
