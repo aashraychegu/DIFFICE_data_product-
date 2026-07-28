@@ -5,7 +5,7 @@ from itertools import product
 from tqdm import tqdm
 from string import Template
 import datetime
-from utils import read_exp, compute_normals, load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  process_one_data_product, patch_config
+from utils import load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  process_one_data_product, patch_config, load_toml_config
 # pyrefly: ignore [missing-import]
 import rioxarray as rxr
 # pyrefly: ignore [missing-import]
@@ -16,7 +16,7 @@ tout = tqdm.write
 data_product_name = "time_matched_bedmap_icesat2"
 
 cwd = Path(".").resolve()
-adjoint_dir = cwd / "../adjoint-ISSM"
+config_path = cwd / "shelves.toml"
 data_folder = cwd / "data" 
 output_location = cwd / "product" / data_product_name
 output_location.mkdir(exist_ok=True, parents = True)
@@ -41,7 +41,9 @@ template_dir = cwd / "templates"
 
 tstr = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
-shelf_names = ["Amery", "RnFlch", "LarsenC", "LarsenD", "Ross"]
+shelf_to_bbox = load_toml_config(config_path)
+shelf_names = list(shelf_to_bbox.keys())
+
 time_mappings = {
         "1":{
             "velocity": ["velocity_1995-2001.nc"],
@@ -120,11 +122,9 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
     pbar.set_description(f"Processing {name}:")
     
     if not config_only:
-        exp_path: Path = adjoint_dir / "out" / shelf_name / "Geometry" / f"{shelf_name}_Outline.exp"
-        source = thickness_datasources[thickness_source_key]["source"]
         if not process_one_data_product(
             name = name, 
-            exp_path = exp_path, 
+            bbox = shelf_to_bbox[shelf_name], 
             output_location = output_location, 
             velocity_nc = velocity_ncs[velocity_name],
             thickness_source = thickness_datasources[thickness_source_key]["source"],

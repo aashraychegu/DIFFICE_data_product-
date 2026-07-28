@@ -6,5 +6,6 @@ from .read_exp import read_exp
 from .patch_yaml import patch_yaml
 from .len_files import len_files
 from .patch_config import patch_config
+from .load_toml_config import load_toml_config
 
-__all__ = ["compute_normals", "load_netcdf", "flatten_netcdf","load_parquet","flatten_parquet","process_one_data_product","read_exp","plot_data_product_summary","patch_yaml","len_files","patch_config"]
+__all__ = ["compute_normals", "load_netcdf", "flatten_netcdf","load_parquet","flatten_parquet","process_one_data_product","read_exp","plot_data_product_summary","patch_yaml","len_files","patch_config", "load_toml_config"]

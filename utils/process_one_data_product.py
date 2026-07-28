@@ -71,10 +71,13 @@ def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
     plt.close(fig)
     plt.close()
 
-def process_one_data_product(name, exp_path, output_location, velocity_nc,thickness_source, thickness_flatten_function, imgs_path = None, buffersize = .1, tout = tqdm.write):
+def process_one_data_product(name, output_location, velocity_nc,thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, tout = tqdm.write):
 
-    floating_domain: List = read_exp(exp_path)[0]
-    maxx, minx, maxy, miny = max(floating_domain["x"]), min(floating_domain["x"]), max(floating_domain["y"]), min(floating_domain["y"])
+    if exp_path:
+        floating_domain: List = read_exp(exp_path)[0]
+        maxx, minx, maxy, miny = max(floating_domain["x"]), min(floating_domain["x"]), max(floating_domain["y"]), min(floating_domain["y"])
+    else:
+        maxx, minx, maxy, miny = bbox
     extent_x, extent_y = maxx - minx, maxy-miny
     buffer_x, buffer_y = extent_x * buffersize , extent_y * buffersize
     maxx, minx, maxy, miny = maxx + buffer_x, minx - buffer_x, maxy + buffer_y, miny - buffer_y
