@@ -14,11 +14,13 @@ import numpy as np
 tout = tqdm.write
 
 cwd = Path(".").resolve()
+template_dir = cwd / "configs"
+
 config_file_name = "time_matched_bedmap_icesat"
-mapping_path = cwd / "configs" / f"{config_file_name}.toml"
+mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings = load_mappings_toml(mapping_path)
 
-config_path = cwd / "configs" / "shelves.toml"
+config_path = template_dir / "shelves.toml"
 data_folder = cwd / "data" 
 output_location = cwd / "product" / data_product_name
 output_location.mkdir(exist_ok=True, parents = True)
@@ -26,10 +28,6 @@ imgs_dir = cwd  / "imgs"
 imgs_dir.mkdir(exist_ok=True)
 imgs_save_dir = imgs_dir / data_product_name
 imgs_save_dir.mkdir(exist_ok=True)
-
-print(data_product_name)
-print(time_mappings)
-exit(6767)
 
 config_only = False
 if len(argv) == 2 and argv[1] == "yaml":
@@ -43,9 +41,8 @@ else:
     for file in imgs_save_dir.iterdir():
         file.unlink(missing_ok = True)
 
-template_dir = cwd / "templates"
 
-tstr = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+time_str = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
 shelf_to_bbox = load_shelf_toml(config_path)
 shelf_names = list(shelf_to_bbox.keys())
@@ -123,7 +120,7 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
             continue
     
     patches = {
-        "artifacts.output_dir" : f"/oak/stanford/groups/cyaolai/AashrayChegu/DIFFICE_out/{data_product_name}__configGen_{tstr}/{name}/",
+        "artifacts.output_dir" : f"/oak/stanford/groups/cyaolai/AashrayChegu/DIFFICE_out/{data_product_name}__configGen_{time_str}/{name}/",
         "data.source" : f"/oak/stanford/groups/cyaolai/AashrayChegu/data-product/product/{data_product_name}/{name}.mat",
         "name" : f"{name}",
     }
