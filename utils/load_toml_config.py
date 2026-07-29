@@ -1,7 +1,7 @@
 import tomllib
 from pathlib import Path
 
-def load_toml_config(path: Path):
+def load_shelf_toml(path: Path):
     with open(path,"rb") as f:
         data = tomllib.load(f)
     out = {}
@@ -9,3 +9,10 @@ def load_toml_config(path: Path):
         out[i] = tuple(data[i]["bbox"])
     return out
 
+def load_mappings_toml(mapping_path):
+    with open(mapping_path, "rb") as f:
+        data = tomllib.load(f)
+
+    data_product_name = data["data_product_name"]
+    time_mappings = data["time_mappings"]
+    return data_product_name, time_mappings

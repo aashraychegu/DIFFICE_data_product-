@@ -1,7 +1,6 @@
 echo "$(pwd)"
 wget --no-clobber --directory-prefix ./data/icesat_aux -i ./data/icesat_aux/download.txt
 
-rm -f ./data/icesat_aux/icesat_h_full.tif
 rm -f ./data/icesat_aux/icesat_h.tif
 rm -f ./data/icesat_aux/icesat_thickness.tif
 rm -f ./data/icesat_aux/stacked.vrt
@@ -17,21 +16,26 @@ gdalwarp -of GTiff \
 
 gdalwarp -of GTiff \
   -tr 500 500 -r average \
+  -ot Float64 \
+  -srcnodata 3.4028234663852886e+38 -dstnodata -9999 \
   -co BIGTIFF=YES -co COMPRESS=DEFLATE -co TILED=YES \
   ./data/icesat_aux/icesat_h_full.tif \
   ./data/icesat_aux/icesat_h.tif
 
 gdal_calc -A ./data/icesat_aux/icesat_h.tif --A_band=1 \
-  --calc="A*(1027.0/(1027.0-917.0))" \
+  --calc="where(A==-9999,-9999,A*(1027.0/(1027.0-917.0)))" \
   --outfile=./data/icesat_aux/icesat_thickness.tif \
   --format=GTiff \
   --co BIGTIFF=YES --co COMPRESS=DEFLATE --co TILED=YES \
-  --NoDataValue=3.4028234663852886e+38 --type=Float64 --overwrite
+  --NoDataValue=-9999 --type=Float64 --overwrite
 
-gdalbuildvrt -separate ./data/icesat_aux/stacked.vrt \
+gdalbuildvrt -separate -srcnodata -9999 -vrtnodata -9999 \
+  ./data/icesat_aux/stacked.vrt \
   ./data/icesat_aux/icesat_h.tif ./data/icesat_aux/icesat_thickness.tif
 
 gdal_translate -of netCDF \
+  -ot Float64 \
+  -a_nodata -9999 \
   -co FORMAT=NC4 -co COMPRESS=DEFLATE -co ZLEVEL=6 \
   ./data/icesat_aux/stacked.vrt ./data/icesat.nc
 

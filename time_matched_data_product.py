@@ -5,7 +5,7 @@ from itertools import product
 from tqdm import tqdm
 from string import Template
 import datetime
-from utils import load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  process_one_data_product, patch_config, load_toml_config
+from utils import load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  process_one_data_product, patch_config, load_shelf_toml, load_mappings_toml
 # pyrefly: ignore [missing-import]
 import rioxarray as rxr
 # pyrefly: ignore [missing-import]
@@ -13,10 +13,12 @@ import numpy as np
 
 tout = tqdm.write
 
-data_product_name = "time_matched_bedmap_icesat2"
-
 cwd = Path(".").resolve()
-config_path = cwd / "shelves.toml"
+config_file_name = "time_matched_bedmap_icesat"
+mapping_path = cwd / "configs" / f"{config_file_name}.toml"
+data_product_name, time_mappings = load_mappings_toml(mapping_path)
+
+config_path = cwd / "configs" / "shelves.toml"
 data_folder = cwd / "data" 
 output_location = cwd / "product" / data_product_name
 output_location.mkdir(exist_ok=True, parents = True)
@@ -24,6 +26,10 @@ imgs_dir = cwd  / "imgs"
 imgs_dir.mkdir(exist_ok=True)
 imgs_save_dir = imgs_dir / data_product_name
 imgs_save_dir.mkdir(exist_ok=True)
+
+print(data_product_name)
+print(time_mappings)
+exit(6767)
 
 config_only = False
 if len(argv) == 2 and argv[1] == "yaml":
@@ -41,28 +47,8 @@ template_dir = cwd / "templates"
 
 tstr = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
-shelf_to_bbox = load_toml_config(config_path)
+shelf_to_bbox = load_shelf_toml(config_path)
 shelf_names = list(shelf_to_bbox.keys())
-
-time_mappings = {
-        "1":{
-            "velocity": ["velocity_1995-2001.nc"],
-            "thickness": ["thickness_1995-2001.nc", "bedmap3_1995_2001.parquet", "bedmap3.parquet",]
-            },
-        "2":{
-            "velocity" : ["velocity_2007-2009.nc"],
-            "thickness": ["thickness_2007-2009.nc", "bedmap3_2007_2009.parquet", "bedmap3.parquet",] 
-            },
-        "3":{
-            "velocity" : ["velocity_2014-2017.nc"],
-            "thickness": ["thickness_2014-2017.nc",  "bedmap3_2014_2017.parquet", "bedmap3.parquet",] 
-            },
-        "4":{
-            "velocity" : ["velocity_2020-2022.nc"],
-            "thickness": ["interp_thickness_2020-2022.nc", "thickness_bm4.nc", "bedmap3.parquet", "icesat.nc"] 
-            },
-    }
-
 
 method_reference = dict(
         netcdf = dict(load = load_netcdf,  flatten = flatten_netcdf),

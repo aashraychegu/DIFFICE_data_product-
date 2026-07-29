@@ -1,0 +1,5 @@
+data_product_name = "just_icesat"
+
+[time_mappings.4]
+velocity = ["velocity_2020-2022.nc"]
+thickness = ["icesat.nc"]
