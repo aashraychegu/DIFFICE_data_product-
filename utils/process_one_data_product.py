@@ -28,7 +28,7 @@ from scipy.ndimage import binary_erosion
 # pyrefly: ignore [missing-import]
 from skimage import measure
 # pyrefly: ignore [missing-import]
-from shapely import Polygon, MultiPolygon
+from shapely import Polygon, MultiPolygon, make_valid
 # pyrefly: ignore [missing-import]
 from shapely.geometry import LineString
 
@@ -136,13 +136,13 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
 
     polygon_with_holes = Polygon(outer_polygon.exterior.coords, holes)
     if not polygon_with_holes.is_valid:
-        polygon_with_holes = polygon_with_holes.buffer(0)
+        polygon_with_holes = make_valid(polygon_with_holes)
     if isinstance(polygon_with_holes, MultiPolygon):
         polygon_with_holes = max(polygon_with_holes.geoms, key=lambda p: p.area)
 
 
 
-    clip_gdf = gpd.GeoDataFrame(geometry=[boundary_polygon], crs="EPSG:3031")
+    clip_gdf = gpd.GeoDataFrame(geometry=[polygon_with_holes], crs="EPSG:3031")
 
     velocity_gdf = gpd.GeoDataFrame(
         {

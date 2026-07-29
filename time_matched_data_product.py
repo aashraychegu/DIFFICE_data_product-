@@ -16,7 +16,7 @@ tout = tqdm.write
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
 
-config_file_name = "time_matched_bedmap_icesat"
+config_file_name = "just_icesat"
 mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings = load_mappings_toml(mapping_path)
 

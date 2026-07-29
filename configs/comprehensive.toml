@@ -1,0 +1,17 @@
+data_product_name = "comprehensive"
+
+[time_mappings.1]
+velocity = ["velocity_1995-2001.nc"]
+thickness = ["thickness_1995-2001.nc", "bedmap3_1995_2001.parquet", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.2]
+velocity = ["velocity_2007-2009.nc"]
+thickness = ["thickness_2007-2009.nc", "bedmap3_2007_2009.parquet", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.3]
+velocity = ["velocity_2014-2017.nc"]
+thickness = ["thickness_2014-2017.nc", "bedmap3_2014_2017.parquet", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.4]
+velocity = ["velocity_2020-2022.nc"]
+thickness = ["icesat.nc", "interp_thickness_2020-2022.nc", "bedmap3.parquet", "thickness_bm4.nc"]

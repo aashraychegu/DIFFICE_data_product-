@@ -14,8 +14,8 @@ def flatten_netcdf(nc, minx, miny, maxx, maxy):
     stacked = nc.stack(points=("y", "x"))
     stacked = stacked.dropna(dim="points", subset=["thickness"], how="all")
 
-    # Keep only points greater than zero
     stacked = stacked.where(stacked["thickness"] > (-32767.0+1), drop=True)
+    stacked = stacked.where(stacked["thickness"] > (-9999+1), drop=True)
 
     return {
         "x": stacked["x"].values,
