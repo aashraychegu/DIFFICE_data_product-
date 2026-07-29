@@ -1,8 +1,9 @@
 echo "$(pwd)"
 wget --no-clobber --directory-prefix ./data/icesat_aux -i ./data/icesat_aux/download.txt
 
+rm -f ./data/icesat_aux/icesat_h_full.tif
 rm -f ./data/icesat_aux/icesat_h.tif
-rm -f /data/icesat_aux/icesat_thickness.tif
+rm -f ./data/icesat_aux/icesat_thickness.tif
 rm -f ./data/icesat_aux/stacked.vrt
 rm -f ./data/icesat.nc
 
@@ -12,6 +13,12 @@ gdalwarp -of GTiff \
   'NETCDF:./data/icesat_aux/ATL14_A2_0329_100m_005_02.nc:h' \
   'NETCDF:./data/icesat_aux/ATL14_A3_0329_100m_005_02.nc:h' \
   'NETCDF:./data/icesat_aux/ATL14_A4_0329_100m_005_02.nc:h' \
+  ./data/icesat_aux/icesat_h_full.tif
+
+gdalwarp -of GTiff \
+  -tr 500 500 -r average \
+  -co BIGTIFF=YES -co COMPRESS=DEFLATE -co TILED=YES \
+  ./data/icesat_aux/icesat_h_full.tif \
   ./data/icesat_aux/icesat_h.tif
 
 gdal_calc -A ./data/icesat_aux/icesat_h.tif --A_band=1 \
