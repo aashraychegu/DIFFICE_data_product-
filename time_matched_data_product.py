@@ -13,7 +13,7 @@ import numpy as np
 
 tout = tqdm.write
 
-data_product_name = "only_icesat2"
+data_product_name = "time_matched_bedmap_icesat2"
 
 cwd = Path(".").resolve()
 config_path = cwd / "shelves.toml"

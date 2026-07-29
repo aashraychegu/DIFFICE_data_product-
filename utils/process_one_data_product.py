@@ -4,6 +4,7 @@ from itertools import product
 from collections import namedtuple
 from tqdm import tqdm
 from typing import List
+import pickle
 from utils.read_exp import read_exp
 from utils.compute_normals import compute_normals
 from utils.load_netcdf import load_netcdf, flatten_netcdf
@@ -109,6 +110,37 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
         boundary_polygon = boundary_polygon.buffer(0)
     if isinstance(boundary_polygon, MultiPolygon):
         boundary_polygon = max(boundary_polygon.geoms, key=lambda p: p.area)
+
+    contour_polygons = []
+    for contour in contours:
+        c_rows, c_cols = contour[:, 0], contour[:, 1]
+        ccx = np.interp(c_cols, np.arange(len(x_coords)), x_coords)
+        ccy = np.interp(c_rows, np.arange(len(y_coords)), y_coords)
+        # Complete the ring
+        ccx = np.append(ccx, ccx[0])
+        ccy = np.append(ccy, ccy[0])
+        poly = Polygon(np.column_stack((ccx, ccy)))
+        if not poly.is_valid:
+            poly = poly.buffer(0)
+        if isinstance(poly, MultiPolygon):
+            poly = max(poly.geoms, key=lambda p: p.area)
+        contour_polygons.append(poly)
+
+    outer_polygon = max(contour_polygons, key=lambda p: p.area)
+    holes = []
+    for poly in contour_polygons:
+        if poly is outer_polygon:
+            continue
+        if outer_polygon.contains(poly):
+            holes.append(list(poly.exterior.coords))
+
+    polygon_with_holes = Polygon(outer_polygon.exterior.coords, holes)
+    if not polygon_with_holes.is_valid:
+        polygon_with_holes = polygon_with_holes.buffer(0)
+    if isinstance(polygon_with_holes, MultiPolygon):
+        polygon_with_holes = max(polygon_with_holes.geoms, key=lambda p: p.area)
+
+
 
     clip_gdf = gpd.GeoDataFrame(geometry=[boundary_polygon], crs="EPSG:3031")
 
@@ -229,7 +261,9 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
         if smallest_dim == 0:
             tout(f"! ABORTED \t {name}")    
             return False
-
+            
+    output_path = output_location / f"{name}_polygon.wkt"
+    output_path.write_text(polygon_with_holes.wkt)
     savemat(output_location / f"{name}.mat",data_product)
     tout(f"> Completed \t {name}")
     return True
