@@ -16,9 +16,9 @@ tout = tqdm.write
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
 
-config_file_name = "just_icesat"
+config_file_name = "comprehensive"
 mapping_path = template_dir / f"{config_file_name}.toml"
-data_product_name, time_mappings = load_mappings_toml(mapping_path)
+data_product_name, time_mappings, template = load_mappings_toml(mapping_path)
 
 config_path = template_dir / "shelves.toml"
 data_folder = cwd / "data" 
@@ -125,4 +125,4 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
         "name" : f"{name}",
     }
     if Path(patches["data.source"]).exists():
-        patch_config(template = template_dir / "template.yaml", patches = patches, save_path=output_location / f"{name}.yaml", )
+        patch_config(template = template_dir / template, patches = patches, save_path=output_location / f"{name}.yaml", )
