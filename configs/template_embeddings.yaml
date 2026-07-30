@@ -21,9 +21,9 @@ model:
   network:
     depth: 6
     width: 30
-    embedding: false # true
-    embed_n: 10 # 64
-    embed_std: 1.0 #
+    embedding: true
+    embed_n: 64
+    embed_std: 1.0
 
 equation:
   name: ssa_iso
