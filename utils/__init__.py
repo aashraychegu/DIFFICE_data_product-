@@ -7,5 +7,21 @@ from .patch_yaml import patch_yaml
 from .len_files import len_files
 from .patch_config import patch_config
 from .load_toml_config import load_shelf_toml, load_mappings_toml
+from .plotting_helpers import plot_contours, plot_data_product_summary
 
-__all__ = ["compute_normals", "load_netcdf", "flatten_netcdf","load_parquet","flatten_parquet","process_one_data_product","read_exp","plot_data_product_summary","patch_yaml","len_files","patch_config", "load_shelf_toml", "load_mappings_toml"]
+__all__ = [
+        "compute_normals", 
+        "load_netcdf", 
+        "flatten_netcdf",
+        "load_parquet",
+        "flatten_parquet",
+        "process_one_data_product",
+        "read_exp",
+        "plot_data_product_summary",
+        "patch_yaml",
+        "len_files",
+        "patch_config",
+        "load_shelf_toml",
+        "load_mappings_toml",
+        "plot_contours",
+    ]

@@ -9,6 +9,7 @@ from utils.read_exp import read_exp
 from utils.compute_normals import compute_normals
 from utils.load_netcdf import load_netcdf, flatten_netcdf
 from utils.load_parquet import load_parquet, flatten_parquet
+from utils.plotting_helpers import plot_data_product_summary, plot_contours
 # pyrefly: ignore [missing-import]
 import matplotlib.pyplot as plt
 # pyrefly: ignore [missing-import]
@@ -31,46 +32,6 @@ from skimage import measure
 from shapely import Polygon, MultiPolygon, make_valid
 # pyrefly: ignore [missing-import]
 from shapely.geometry import LineString
-
-def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
-                              velocity_x, velocity_y, velocity_vx, velocity_vy,
-                              thickness_x, thickness_y, thickness_thickness,
-                              imgs_path, tout=tqdm.write):
-    fig, axes = plt.subplots(1, 3, figsize=(45, 15))
-
-    speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
-
-    axes[0].plot(px, py, c="black", lw=.5, label="outer boundary")
-    sc0 = axes[0].scatter(xct, yct, s=2, c=speed, cmap="viridis", label="ice shelf points")
-    fig.colorbar(sc0, ax=axes[0], label="velocity magnitude")
-    axes[0].quiver(
-        xct, yct, nnct[:, 0], nnct[:, 1],
-        color="blue", angles="xy", scale_units="xy",
-        scale=0.0003, width=0.001, label="normals",
-    )
-    axes[0].set_title("Outer boundary + ice shelf points + normals")
-    axes[0].legend(loc="best", markerscale=5)
-
-    axes[1].plot(px, py, c="black", lw=.5)
-    vel_speed = np.sqrt(velocity_vx**2 + velocity_vy**2)
-    sc1 = axes[1].scatter(velocity_x, velocity_y, s=2, c=vel_speed, cmap="viridis")
-    fig.colorbar(sc1, ax=axes[1], label="velocity magnitude")
-    axes[1].set_title("Velocity magnitude")
-
-    axes[2].plot(px, py, c="black", lw=.5)
-    sc2 = axes[2].scatter(thickness_x, thickness_y, s=2, c=thickness_thickness, cmap="cividis")
-    fig.colorbar(sc2, ax=axes[2], label="thickness")
-    axes[2].set_title("Thickness")
-
-    for ax in axes:
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        ax.set_aspect("equal")
-
-    fig.tight_layout()
-    fig.savefig(f"{imgs_path}/{name}_summary.png", dpi=512, bbox_inches="tight")
-    plt.close(fig)
-    plt.close()
 
 def process_one_data_product(name, output_location, velocity_nc,thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, tout = tqdm.write):
 
@@ -140,8 +101,6 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     if isinstance(polygon_with_holes, MultiPolygon):
         polygon_with_holes = max(polygon_with_holes.geoms, key=lambda p: p.area)
 
-
-
     clip_gdf = gpd.GeoDataFrame(geometry=[polygon_with_holes], crs="EPSG:3031")
 
     velocity_gdf = gpd.GeoDataFrame(
@@ -186,13 +145,13 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
 
     ocean_mask = clipped_velocity_nc["MASK"] == 0
 
-    contours = measure.find_contours(ocean_mask.values.astype(float), level=.01)
+    ocean_contours = measure.find_contours(ocean_mask.values.astype(float), level=.01)
 
-    boundary_contour = max(contours, key=len)
-    rows, cols = boundary_contour[:, 0], boundary_contour[:, 1]
-    bcx = np.interp(cols, np.arange(len(x_coords)), x_coords)
-    bcy = np.interp(rows, np.arange(len(y_coords)), y_coords)
-    ocean_line = LineString(np.column_stack((bcx, bcy)))
+    ocean_boundary_contour = max(ocean_contours, key=len)
+    o_rows, o_cols = ocean_boundary_contour[:, 0], ocean_boundary_contour[:, 1]
+    obcx = np.interp(o_cols, np.arange(len(x_coords)), x_coords)
+    obcy = np.interp(o_rows, np.arange(len(y_coords)), y_coords)
+    ocean_line = LineString(np.column_stack((obcx, obcy)))
     ocean_buffer = ocean_line.buffer(1000.0)
     boundary_points = gpd.GeoDataFrame(
         {
@@ -208,15 +167,18 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     )
     ocean_buffer_gdf = gpd.GeoDataFrame(geometry=[ocean_buffer], crs="EPSG:3031")
 
-    shelf_boundary = gpd.sjoin(
+    if imgs_path is not None:
+        plot_contours(name, imgs_path,contours,ocean_contours,mask)
+
+    calving_front = gpd.sjoin(
         boundary_points, ocean_buffer_gdf, predicate="within", how="inner"
     ).drop(columns="index_right")
 
-    xct = shelf_boundary["px"].values[:, np.newaxis]
-    yct = shelf_boundary["py"].values[:, np.newaxis]
-    bd_ud = shelf_boundary["vx"].values[:, np.newaxis]
-    bd_vd = shelf_boundary["vy"].values[:, np.newaxis]
-    nnct = shelf_boundary[["nx", "ny"]].values
+    xct = calving_front["px"].values[:, np.newaxis]
+    yct = calving_front["py"].values[:, np.newaxis]
+    bd_ud = calving_front["vx"].values[:, np.newaxis]
+    bd_vd = calving_front["vy"].values[:, np.newaxis]
+    nnct = calving_front[["nx", "ny"]].values
 
     fig, axes = plt.subplots(1, 3, figsize=(45, 15))
 
