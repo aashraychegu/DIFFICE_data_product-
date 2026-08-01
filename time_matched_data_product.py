@@ -1,47 +1,61 @@
 from sys import argv
-import pathlib as pl
 from pathlib import Path
 from itertools import product
 from tqdm import tqdm
-from string import Template
+tout = tqdm.write
 import datetime
 from utils import load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  process_one_data_product, patch_config, load_shelf_toml, load_mappings_toml
 # pyrefly: ignore [missing-import]
 import rioxarray as rxr
 # pyrefly: ignore [missing-import]
-import numpy as np
+import argparse
+import shutil
 
-tout = tqdm.write
-
+print("All Configs:")
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
+for filepath in template_dir.glob("*.toml"):
+    print(f" > {filepath.stem:<50} | {filepath.name}")
 
-if len(argv) != 2: exit(67)
-config_file_name = argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", required=True, help="Config file name (without .toml extension)")
+parser.add_argument("--yaml-only", action="store_true", help="Only regenerate YAML files")
+parser.add_argument("--copy-from", help="Source to copy from", default = None)
+args = parser.parse_args()
+
+config_file_name = args.config
 mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings, template = load_mappings_toml(mapping_path)
 
 config_path = template_dir / "shelves.toml"
 data_folder = cwd / "data" 
-output_location = cwd / "product" / data_product_name
+product_location = cwd / "product"
+output_location = product_location / data_product_name
 output_location.mkdir(exist_ok=True, parents = True)
 imgs_dir = cwd  / "imgs"
 imgs_dir.mkdir(exist_ok=True)
 imgs_save_dir = imgs_dir / data_product_name
 imgs_save_dir.mkdir(exist_ok=True)
 
-config_only = False
-if len(argv) == 2 and argv[1] == "yaml":
-    config_only = True
+config_only = args.yaml_only
+if config_only:
     for file in output_location.glob("*.yaml"):
         file.unlink(missing_ok = True)
-else:
+    copy_dir = Path(product_location / args.copy_from)
+    if copy_dir.exists():
+        for pattern in ("*.mat", "*.wkt"):
+            for file in copy_dir.glob(pattern):
+                shutil.copy2(file, output_location / file.name)
+    else:
+        print(f"Copy from directory {copy_dir} not found")
+        exit(67)
+
+if not config_only:
     for file in output_location.iterdir():
         file.unlink(missing_ok = True)
 
     for file in imgs_save_dir.iterdir():
         file.unlink(missing_ok = True)
-
 
 time_str = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
@@ -70,29 +84,30 @@ velocity_files = sorted(velocity_files)
 thickness_files = sorted(thickness_files)
 
 thickness_datasources = {}
-# pyrefly: ignore [invalid-syntax]
-for thickness_file in (pbar:=tqdm(thickness_files)):
-    pbar.set_description(f"Loading Thickness: {thickness_file}")
-    thickness_file_path = data_folder / thickness_file
-    source_type = get_dataset_type(thickness_file)
-    source = method_reference[source_type]["load"](thickness_file_path)
-    thickness_datasources[thickness_file] = dict(source = source, function = method_reference[source_type]["flatten"])
-else:
-    pbar.set_description("All thickness files loaded.")
-
 velocity_ncs = {}
-# pyrefly: ignore [invalid-syntax]
-for velocity_filename in (pbar := tqdm(velocity_files)):
-    pbar.set_description(f"Loading Velocity: {velocity_filename}")
-    velocity_name = get_name(velocity_filename)
-    velocity_path = data_folder / velocity_filename
-    velocity_nc = rxr.open_rasterio(velocity_path)[["VX","VY","MASK"]]
-    velocity_nc["VX"] = velocity_nc["VX"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
-    velocity_nc["VY"] = velocity_nc["VY"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
-    velocity_nc["MASK"] = velocity_nc["MASK"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
-    velocity_ncs[velocity_name] = velocity_nc.rio.write_crs("EPSG:3031")
-else:
-    pbar.set_description("All velocity files loaded.")
+
+if not config_only:
+    # pyrefly: ignore [invalid-syntax]
+    for thickness_file in (pbar:=tqdm(thickness_files)):
+        pbar.set_description(f"Loading Thickness: {thickness_file}")
+        thickness_file_path = data_folder / thickness_file
+        source_type = get_dataset_type(thickness_file)
+        source = method_reference[source_type]["load"](thickness_file_path)
+        thickness_datasources[thickness_file] = dict(source = source, function = method_reference[source_type]["flatten"])
+    else:
+        pbar.set_description("All thickness files loaded.")
+    # pyrefly: ignore [invalid-syntax]
+    for velocity_filename in (pbar := tqdm(velocity_files)):
+        pbar.set_description(f"Loading Velocity: {velocity_filename}")
+        velocity_name = get_name(velocity_filename)
+        velocity_path = data_folder / velocity_filename
+        velocity_nc = rxr.open_rasterio(velocity_path)[["VX","VY","MASK"]]
+        velocity_nc["VX"] = velocity_nc["VX"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
+        velocity_nc["VY"] = velocity_nc["VY"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
+        velocity_nc["MASK"] = velocity_nc["MASK"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
+        velocity_ncs[velocity_name] = velocity_nc.rio.write_crs("EPSG:3031")
+    else:
+        pbar.set_description("All velocity files loaded.")
 
 triplets = []
 for shelf_name, time_mapping in tqdm(product(shelf_names,time_mappings.values())):
