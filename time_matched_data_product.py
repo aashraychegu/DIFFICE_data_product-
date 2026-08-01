@@ -16,7 +16,8 @@ tout = tqdm.write
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
 
-config_file_name = "comprehensive"
+if len(argv) != 2: exit(67)
+config_file_name = argv[1]
 mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings, template = load_mappings_toml(mapping_path)
 

@@ -1,5 +1,5 @@
-data_product_name = "viz"
-template = "template.yaml"
+# data_product_name = "viz"
+# template = "template.yaml"
 
 # data_product_name = "comprehensive-standard"
 # template = "template.yaml"
@@ -9,6 +9,9 @@ template = "template.yaml"
 
 # data_product_name = "comprehensive-.25"
 # template = "eq_weight_dot25.yaml"
+
+data_product_name = "comprehensive-.5"
+template = "eq_weight_dot50.yaml"
 
 # data_product_name = "comprehensive-ff"
 # template = "template_embeddings.yaml"
