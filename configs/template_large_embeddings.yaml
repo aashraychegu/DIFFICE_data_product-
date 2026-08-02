@@ -23,7 +23,7 @@ model:
     width: 30
     embedding: true
     embed_n: 128
-    embed_std: 2.0
+    embed_std: 4.0
 
 equation:
   name: ssa_iso
@@ -41,8 +41,8 @@ training:
         damping: .nan
         parameters:
           preset: xpinn_joint_inversion_reference
-          log_rate: 20
-      iterations: 10000
+          log_rate: 100
+      iterations: 40000
       adaptive_sampling: false
 
 artifacts:
