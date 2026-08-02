@@ -1,6 +1,5 @@
-data_product_name = "large_embeddings"
-template = "large_embeddings.yaml"
-
+data_product_name = "eq_weight_dot10"
+template = "eq_weight_dot10.yaml"
 
 [time_mappings.1]
 velocity = ["velocity_1995-2001.nc"]
