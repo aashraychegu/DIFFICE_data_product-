@@ -14,7 +14,7 @@ import shutil
 print("All Configs:")
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
-for filepath in template_dir.glob("*.toml"):
+for filepath in sorted(list(template_dir.glob("*.toml"))):
     print(f" > {filepath.stem:<50} | {filepath.name}")
 
 parser = argparse.ArgumentParser()

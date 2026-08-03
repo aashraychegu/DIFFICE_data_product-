@@ -126,6 +126,8 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
         geometry=gpd.points_from_xy(flattened_thickness["x"], flattened_thickness["y"]),
         crs="EPSG:3031",
     )
+    thickness_gdf = thickness_gdf.dropna(subset=["thickness"])
+    thickness_gdf = thickness_gdf[thickness_gdf["thickness"] > 1e-8]
     thickness_clipped = gpd.sjoin(thickness_gdf, clip_gdf, predicate="within", how="inner")
 
     thickness_x = thickness_clipped.geometry.x.values
