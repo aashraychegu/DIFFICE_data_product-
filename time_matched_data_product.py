@@ -27,7 +27,7 @@ config_file_name = args.config
 mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings, template = load_mappings_toml(mapping_path)
 
-config_path = template_dir / "shelves.toml"
+config_path = template_dir / ".shelves.toml"
 data_folder = cwd / "data" 
 product_location = cwd / "product"
 output_location = product_location / data_product_name
