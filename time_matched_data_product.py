@@ -15,7 +15,8 @@ print("All Configs:")
 cwd = Path(".").resolve()
 template_dir = cwd / "configs"
 for filepath in sorted(list(template_dir.glob("*.toml"))):
-    print(f" > {filepath.stem:<50} | {filepath.name}")
+    if not filepath.name.startswith("."):
+        print(f" > {filepath.stem:<50} | {filepath.name}")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", required=True, help="Config file name (without .toml extension)")
@@ -25,9 +26,10 @@ args = parser.parse_args()
 
 config_file_name = args.config
 mapping_path = template_dir / f"{config_file_name}.toml"
-data_product_name, time_mappings, template = load_mappings_toml(mapping_path)
+data_product_name, time_mappings, template, boundary_smoothing = load_mappings_toml(mapping_path)
+print(f"Using Config: {config_file_name} at {mapping_path}")
 
-config_path = template_dir / ".shelves.toml"
+shelves_config_path = template_dir / ".shelves.toml"
 data_folder = cwd / "data" 
 product_location = cwd / "product"
 output_location = product_location / data_product_name
@@ -35,7 +37,6 @@ output_location.mkdir(exist_ok=True, parents = True)
 imgs_dir = cwd  / "imgs"
 imgs_dir.mkdir(exist_ok=True)
 imgs_save_dir = imgs_dir / data_product_name
-imgs_save_dir.mkdir(exist_ok=True)
 
 config_only = args.yaml_only
 if config_only:
@@ -51,15 +52,16 @@ if config_only:
         exit(67)
 
 if not config_only:
+    imgs_save_dir.mkdir(exist_ok=True)
+    
     for file in output_location.iterdir():
         file.unlink(missing_ok = True)
-
     for file in imgs_save_dir.iterdir():
         file.unlink(missing_ok = True)
 
 time_str = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
-shelf_to_bbox = load_shelf_toml(config_path)
+shelf_to_bbox = load_shelf_toml(shelves_config_path)
 shelf_names = list(shelf_to_bbox.keys())
 
 method_reference = dict(
@@ -132,6 +134,7 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
             thickness_source = thickness_datasources[thickness_source_key]["source"],
             thickness_flatten_function = thickness_datasources[thickness_source_key]["function"],
             imgs_path = imgs_save_dir,
+            boundary_smoothing_buffer=boundary_smoothing
             ):
             continue
     

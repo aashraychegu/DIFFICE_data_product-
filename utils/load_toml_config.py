@@ -15,4 +15,5 @@ def load_mappings_toml(mapping_path):
 
     data_product_name = data["data_product_name"]
     time_mappings = data["time_mappings"]
-    return data_product_name, time_mappings, data["template"]
+    boundary_smoothing = data.get("boundary_smoothing",2000)
+    return data_product_name, time_mappings, data["template"], boundary_smoothing

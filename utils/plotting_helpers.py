@@ -47,12 +47,14 @@ def plot_contours(name,save_path, contours, ocean_contours, mask):
 def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
                               velocity_x, velocity_y, velocity_vx, velocity_vy,
                               thickness_x, thickness_y, thickness_thickness,
-                              imgs_path, tout=tqdm.write):
+                              imgs_path, original_px, original_py, tout=tqdm.write):
     fig, axes = plt.subplots(1, 3, figsize=(45, 15))
 
     speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
 
     axes[0].plot(px, py, c="black", lw=.5, label="outer boundary")
+    axes[0].scatter(original_px, original_py, s=2, c="tab:orange", alpha=0.5,
+                    label="original points")
     sc0 = axes[0].scatter(xct, yct, s=2, c=speed, cmap="viridis", label="ice shelf points")
     fig.colorbar(sc0, ax=axes[0], label="velocity magnitude")
     axes[0].quiver(

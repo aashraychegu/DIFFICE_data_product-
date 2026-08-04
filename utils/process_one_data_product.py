@@ -4,12 +4,15 @@ from itertools import product
 from collections import namedtuple
 from tqdm import tqdm
 from typing import List
-import pickle
 from utils.read_exp import read_exp
 from utils.compute_normals import compute_normals
-from utils.load_netcdf import load_netcdf, flatten_netcdf
-from utils.load_parquet import load_parquet, flatten_parquet
 from utils.plotting_helpers import plot_data_product_summary, plot_contours
+
+from shapely import Polygon, MultiPolygon, make_valid
+from shapely.geometry import LineString
+from shapely.ops import unary_union
+
+
 # pyrefly: ignore [missing-import]
 import matplotlib.pyplot as plt
 # pyrefly: ignore [missing-import]
@@ -21,19 +24,11 @@ import numpy as np
 # pyrefly: ignore [missing-import]
 import geopandas as gpd
 # pyrefly: ignore [missing-import]
-from concave_hull import concave_hull, concave_hull_indexes
-# pyrefly: ignore [missing-import]
 from scipy.io import savemat 
 # pyrefly: ignore [missing-import]
-from scipy.ndimage import binary_erosion
-# pyrefly: ignore [missing-import]
 from skimage import measure
-# pyrefly: ignore [missing-import]
-from shapely import Polygon, MultiPolygon, make_valid
-# pyrefly: ignore [missing-import]
-from shapely.geometry import LineString
 
-def process_one_data_product(name, output_location, velocity_nc,thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, tout = tqdm.write):
+def process_one_data_product(name, output_location, velocity_nc,thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, boundary_smoothing_buffer = 2500, tout = tqdm.write):
 
     if exp_path:
         floating_domain: List = read_exp(exp_path)[0]
@@ -135,15 +130,32 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     thickness_surface = thickness_clipped["surface"].values
     thickness_thickness = thickness_clipped["thickness"].values
     
-    px, py = boundary_polygon.exterior.xy
+    original_px, original_py = boundary_polygon.exterior.xy
+
+    closed_polygon = (
+        boundary_polygon
+        .buffer(boundary_smoothing_buffer,  quad_segs=64, join_style="round")
+        .buffer(-boundary_smoothing_buffer, quad_segs=64, join_style="round")
+    )
+
+    # combine: original geometry + only the region the closing filled
+    combined_polygon = unary_union([boundary_polygon, closed_polygon])
+
+    px, py = combined_polygon.exterior.xy
     px = np.asarray(px)[:-1]
     py = np.asarray(py)[:-1]
     normals = compute_normals(px, py)
 
     px_da = xr.DataArray(px, dims="points")
     py_da = xr.DataArray(py, dims="points")
-    boundary_vx = clipped_velocity_nc["VX"].sel(x=px_da, y=py_da, method="nearest").values
-    boundary_vy = clipped_velocity_nc["VY"].sel(x=px_da, y=py_da, method="nearest").values
+    boundary_vx = clipped_velocity_nc["VX"].interp(
+        x=px_da, y=py_da, method="pchip",
+        kwargs={"fill_value": None, "bounds_error": False},
+    ).values
+    boundary_vy = clipped_velocity_nc["VY"].interp(
+        x=px_da, y=py_da, method="pchip",
+        kwargs={"fill_value": None, "bounds_error": False},
+    ).values
 
     ocean_mask = clipped_velocity_nc["MASK"] == 0
 
@@ -155,6 +167,7 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     obcy = np.interp(o_rows, np.arange(len(y_coords)), y_coords)
     ocean_line = LineString(np.column_stack((obcx, obcy)))
     ocean_buffer = ocean_line.buffer(1000.0)
+
     boundary_points = gpd.GeoDataFrame(
         {
             "px": px,
@@ -169,9 +182,6 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     )
     ocean_buffer_gdf = gpd.GeoDataFrame(geometry=[ocean_buffer], crs="EPSG:3031")
 
-    if imgs_path is not None:
-        plot_contours(name, imgs_path,contours,ocean_contours,mask)
-
     calving_front = gpd.sjoin(
         boundary_points, ocean_buffer_gdf, predicate="within", how="inner"
     ).drop(columns="index_right")
@@ -182,17 +192,8 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     bd_vd = calving_front["vy"].values[:, np.newaxis]
     nnct = calving_front[["nx", "ny"]].values
 
-    fig, axes = plt.subplots(1, 3, figsize=(45, 15))
-
     speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
 
-    if imgs_path is not None:
-        plot_data_product_summary(
-            name, px, py, xct, yct, nnct, bd_ud, bd_vd,
-            velocity_x, velocity_y, velocity_vx, velocity_vy,
-            thickness_x, thickness_y, thickness_thickness,
-            imgs_path, tout=tout,
-        )
     data_product: dict[str, np.ndarray] = dict(
             # Velocity ground truth data
             xd = velocity_x[:, np.newaxis],          # x-coordinates of FEM vertices at which velocities are calculated
@@ -226,6 +227,15 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
             tout(f"! ABORTED \t {name}")    
             return False
             
+    if imgs_path is not None:
+        plot_contours(name, imgs_path,contours,ocean_contours,mask)
+        plot_data_product_summary(
+            name, px, py, xct, yct, nnct, bd_ud, bd_vd,
+            velocity_x, velocity_y, velocity_vx, velocity_vy,
+            thickness_x, thickness_y, thickness_thickness,
+            imgs_path, original_px=original_px,original_py=original_py, tout=tout,
+        )
+
     output_path = output_location / f"{name}_polygon.wkt"
     output_path.write_text(polygon_with_holes.wkt)
     savemat(output_location / f"{name}.mat",data_product)
