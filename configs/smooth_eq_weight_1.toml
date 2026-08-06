@@ -1,5 +1,5 @@
-data_product_name = "eq_weight_1"
-template = "eq_weight_1.yaml"
+data_product_name = "smooth_eq_weight_1"
+template = "smooth_eq_weight_1.yaml"
 boundary_smoothing = 3000
 
 [time_mappings.1]

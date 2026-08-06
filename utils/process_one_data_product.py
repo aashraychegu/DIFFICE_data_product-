@@ -42,10 +42,12 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     clipped_velocity_nc = velocity_nc.rio.clip_box(minx=minx, miny=miny, maxx=maxx, maxy=maxy,crs = "EPSG:3031")
 
     mask = clipped_velocity_nc["MASK"] == 2
-    velocity_x = clipped_velocity_nc["x"].broadcast_like(mask).values[mask.values]
-    velocity_y = clipped_velocity_nc["y"].broadcast_like(mask).values[mask.values]
-    velocity_vx = clipped_velocity_nc["VX"].values[mask.values]
-    velocity_vy = clipped_velocity_nc["VY"].values[mask.values]
+    nonzero_mask = ((clipped_velocity_nc["VX"] != 0) & (clipped_velocity_nc["VY"] != 0))
+    total_velocity_mask = mask & nonzero_mask
+    velocity_x = clipped_velocity_nc["x"].broadcast_like(total_velocity_mask).values[total_velocity_mask.values]
+    velocity_y = clipped_velocity_nc["y"].broadcast_like(total_velocity_mask).values[total_velocity_mask.values]
+    velocity_vx = clipped_velocity_nc["VX"].values[total_velocity_mask.values]
+    velocity_vy = clipped_velocity_nc["VY"].values[total_velocity_mask.values]
 
     flattened_thickness = thickness_flatten_function(thickness_source, minx=minx, miny=miny, maxx=maxx, maxy=maxy)
 
@@ -72,7 +74,6 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
         c_rows, c_cols = contour[:, 0], contour[:, 1]
         ccx = np.interp(c_cols, np.arange(len(x_coords)), x_coords)
         ccy = np.interp(c_rows, np.arange(len(y_coords)), y_coords)
-        # Complete the ring
         ccx = np.append(ccx, ccx[0])
         ccy = np.append(ccy, ccy[0])
         poly = Polygon(np.column_stack((ccx, ccy)))
@@ -124,6 +125,16 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     thickness_gdf = thickness_gdf.dropna(subset=["thickness"])
     thickness_gdf = thickness_gdf[thickness_gdf["thickness"] > 1e-8]
     thickness_clipped = gpd.sjoin(thickness_gdf, clip_gdf, predicate="within", how="inner")
+
+    # Look up the removed_mask value at each thickness point's location
+    pt_x = xr.DataArray(thickness_clipped.geometry.x.values, dims="points")
+    pt_y = xr.DataArray(thickness_clipped.geometry.y.values, dims="points")
+
+    removed_at_points = total_velocity_mask.sel(x=pt_x, y=pt_y, method="nearest").values
+
+    # Keep only points NOT in the removed region
+    keep = ~removed_at_points
+    thickness_clipped = thickness_clipped[keep]
 
     thickness_x = thickness_clipped.geometry.x.values
     thickness_y = thickness_clipped.geometry.y.values
