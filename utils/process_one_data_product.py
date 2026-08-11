@@ -238,7 +238,7 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
     for key, product in data_product.items():
         smallest_dim = min(product.shape)
         if smallest_dim == 0:
-            tout(f"! ABORTED \t {name}")    
+            tout(f"! ABORTED \t {name}\n \t {key} has shape {product.shape}")    
             return False
             
     output_path = output_location / f"{name}_polygon.wkt"

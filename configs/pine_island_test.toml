@@ -1,0 +1,121 @@
+shelves=["PineIsland"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/PIG/output-data"
+data_product_name = "pine_island_test"
+template = "pine_island_test.yaml"
+boundary_smoothing = 1500
+
+[time_mappings.1]
+velocity = ["2009-09-15__velocity.nc"]
+thickness = ["2009-09-15__thickness.nc"]
+
+[time_mappings.2]
+velocity = ["2011-11-30__velocity.nc"]
+thickness = ["2011-11-30__thickness.nc"]
+
+[time_mappings.3]
+velocity = ["2012-07-01__velocity.nc"]
+thickness = ["2012-07-01__thickness.nc"]
+
+[time_mappings.4]
+velocity = ["2013-06-01__velocity.nc"]
+thickness = ["2013-06-01__thickness.nc"]
+
+[time_mappings.5]
+velocity = ["2014-01-30__velocity.nc"]
+thickness = ["2014-01-30__thickness.nc"]
+
+[time_mappings.6]
+velocity = ["2014-08-01__velocity.nc"]
+thickness = ["2014-08-01__thickness.nc"]
+
+[time_mappings.7]
+velocity = ["2015-01-01__velocity.nc"]
+thickness = ["2015-01-01__thickness.nc"]
+
+[time_mappings.8]
+velocity = ["2015-05-16__velocity.nc"]
+thickness = ["2015-05-16__thickness.nc"]
+
+[time_mappings.9]
+velocity = ["2015-06-01__velocity.nc"]
+thickness = ["2015-06-01__thickness.nc"]
+
+[time_mappings.10]
+velocity = ["2015-08-15__velocity.nc"]
+thickness = ["2015-08-15__thickness.nc"]
+
+[time_mappings.11]
+velocity = ["2015-11-15__velocity.nc"]
+thickness = ["2015-11-15__thickness.nc"]
+
+[time_mappings.12]
+velocity = ["2016-02-15__velocity.nc"]
+thickness = ["2016-02-15__thickness.nc"]
+
+[time_mappings.13]
+velocity = ["2016-05-16__velocity.nc"]
+thickness = ["2016-05-16__thickness.nc"]
+
+[time_mappings.14]
+velocity = ["2016-08-15__velocity.nc"]
+thickness = ["2016-08-15__thickness.nc"]
+
+[time_mappings.15]
+velocity = ["2016-11-15__velocity.nc"]
+thickness = ["2016-11-15__thickness.nc"]
+
+[time_mappings.16]
+velocity = ["2017-02-14__velocity.nc"]
+thickness = ["2017-02-14__thickness.nc"]
+
+[time_mappings.17]
+velocity = ["2017-05-16__velocity.nc"]
+thickness = ["2017-05-16__thickness.nc"]
+
+[time_mappings.18]
+velocity = ["2017-08-15__velocity.nc"]
+thickness = ["2017-08-15__thickness.nc"]
+
+[time_mappings.19]
+velocity = ["2017-11-15__velocity.nc"]
+thickness = ["2017-11-15__thickness.nc"]
+
+[time_mappings.20]
+velocity = ["2018-02-14__velocity.nc"]
+thickness = ["2018-02-14__thickness.nc"]
+
+[time_mappings.21]
+velocity = ["2018-05-16__velocity.nc"]
+thickness = ["2018-05-16__thickness.nc"]
+
+[time_mappings.22]
+velocity = ["2018-08-15__velocity.nc"]
+thickness = ["2018-08-15__thickness.nc"]
+
+[time_mappings.23]
+velocity = ["2018-11-15__velocity.nc"]
+thickness = ["2018-11-15__thickness.nc"]
+
+[time_mappings.24]
+velocity = ["2019-02-14__velocity.nc"]
+thickness = ["2019-02-14__thickness.nc"]
+
+[time_mappings.25]
+velocity = ["2019-05-16__velocity.nc"]
+thickness = ["2019-05-16__thickness.nc"]
+
+[time_mappings.26]
+velocity = ["2019-08-15__velocity.nc"]
+thickness = ["2019-08-15__thickness.nc"]
+
+[time_mappings.27]
+velocity = ["2019-11-15__velocity.nc"]
+thickness = ["2019-11-15__thickness.nc"]
+
+[time_mappings.28]
+velocity = ["2020-02-15__velocity.nc"]
+thickness = ["2020-02-15__thickness.nc"]
+
+[time_mappings.29]
+velocity = ["2020-05-16__velocity.nc"]
+thickness = ["2020-05-16__thickness.nc"]

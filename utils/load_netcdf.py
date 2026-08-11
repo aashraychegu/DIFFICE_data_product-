@@ -3,7 +3,7 @@ from pathlib import Path
 import rioxarray as rxr
 
 def load_netcdf(path: Path): 
-    dataset = rxr.open_rasterio(path)[["surface","thickness"]]
+    dataset = rxr.open_rasterio(path,lock=False)[["surface","thickness"]]
     dataset = dataset.rio.write_crs("EPSG:3031")
     dataset["surface"] = dataset["surface"].rio.write_crs("EPSG:3031").squeeze("band",drop = True)
     dataset["thickness"] = dataset["thickness"].rio.write_crs("EPSG:3031").squeeze("band",drop = True)

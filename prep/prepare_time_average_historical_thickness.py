@@ -15,7 +15,7 @@ extrapolated_time_subsets = [(2020,2022)]
 cwd = Path(".").resolve()
 data = cwd / "data"
 file_path = data / "historical_thickness.nc"
-historical = rxr.open_rasterio(file_path)
+historical = rxr.open_rasterio(file_path, lock = False)
 thickness = historical["thickness"].rio.write_crs("EPSG:3031")
 thickness = thickness.where(thickness != -32767.0).rio.write_crs("EPSG:3031")
 
