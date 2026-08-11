@@ -103,11 +103,13 @@ if not config_only:
         pbar.set_description(f"Loading Velocity: {velocity_filename}")
         velocity_name = get_name(velocity_filename)
         velocity_path = data_folder / velocity_filename
-        velocity_nc = rxr.open_rasterio(velocity_path)[["VX","VY","MASK"]]
+        velocity_nc = rxr.open_rasterio(velocity_path,decode_coords="all")[["VX","VY","MASK"]]
         velocity_nc["VX"] = velocity_nc["VX"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
         velocity_nc["VY"] = velocity_nc["VY"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
         velocity_nc["MASK"] = velocity_nc["MASK"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
+
         velocity_ncs[velocity_name] = velocity_nc.rio.write_crs("EPSG:3031")
+        
     else:
         pbar.set_description("All velocity files loaded.")
 

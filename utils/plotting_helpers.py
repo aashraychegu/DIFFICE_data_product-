@@ -53,9 +53,9 @@ def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
     speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
 
     axes[0].plot(px, py, c="black", lw=.5, label="outer boundary")
-    axes[0].scatter(original_px, original_py, s=2, c="tab:orange", alpha=0.5,
+    axes[0].scatter(original_px, original_py, s=.05, c="tab:orange", alpha=0.5,
                     label="original points")
-    sc0 = axes[0].scatter(xct, yct, s=2, c=speed, cmap="viridis", label="ice shelf points")
+    sc0 = axes[0].scatter(xct, yct, s=.05, c=speed, cmap="viridis", label="ice shelf points")
     fig.colorbar(sc0, ax=axes[0], label="velocity magnitude")
     axes[0].quiver(
         xct, yct, nnct[:, 0], nnct[:, 1],
@@ -65,13 +65,13 @@ def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
     axes[0].set_title("Outer boundary + ice shelf points + normals")
     axes[0].legend(loc="best", markerscale=5)
 
-    axes[1].plot(px, py, c="black", lw=.5)
+    axes[1].plot(px, py, c="black", lw=.05)
     vel_speed = np.sqrt(velocity_vx**2 + velocity_vy**2)
     sc1 = axes[1].scatter(velocity_x, velocity_y, s=2, c=vel_speed, cmap="viridis")
     fig.colorbar(sc1, ax=axes[1], label="velocity magnitude")
     axes[1].set_title("Velocity magnitude")
 
-    axes[2].plot(px, py, c="black", lw=.5)
+    axes[2].plot(px, py, c="black", lw=.05)
     sc2 = axes[2].scatter(thickness_x, thickness_y, s=2, c=thickness_thickness, cmap="cividis")
     fig.colorbar(sc2, ax=axes[2], label="thickness")
     axes[2].set_title("Thickness")

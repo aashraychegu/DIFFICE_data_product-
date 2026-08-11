@@ -28,7 +28,7 @@ from scipy.io import savemat
 # pyrefly: ignore [missing-import]
 from skimage import measure
 
-def process_one_data_product(name, output_location, velocity_nc,thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, boundary_smoothing_buffer = 2500, tout = tqdm.write):
+def process_one_data_product(name, output_location, velocity_nc, thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, boundary_smoothing_buffer = 2500, tout = tqdm.write):
 
     if exp_path:
         floating_domain: List = read_exp(exp_path)[0]
@@ -126,14 +126,10 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     thickness_gdf = thickness_gdf[thickness_gdf["thickness"] > 1e-8]
     thickness_clipped = gpd.sjoin(thickness_gdf, clip_gdf, predicate="within", how="inner")
 
-    # Look up the removed_mask value at each thickness point's location
     pt_x = xr.DataArray(thickness_clipped.geometry.x.values, dims="points")
     pt_y = xr.DataArray(thickness_clipped.geometry.y.values, dims="points")
 
-    removed_at_points = total_velocity_mask.sel(x=pt_x, y=pt_y, method="nearest").values
-
-    # Keep only points NOT in the removed region
-    keep = ~removed_at_points
+    keep = total_velocity_mask.sel(x=pt_x, y=pt_y, method="nearest").values
     thickness_clipped = thickness_clipped[keep]
 
     thickness_x = thickness_clipped.geometry.x.values
@@ -203,7 +199,14 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
     bd_vd = calving_front["vy"].values[:, np.newaxis]
     nnct = calving_front[["nx", "ny"]].values
 
-    speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
+    if imgs_path is not None:
+        plot_contours(name, imgs_path,contours,ocean_contours,mask)
+        plot_data_product_summary(
+            name, px, py, xct, yct, nnct, bd_ud, bd_vd,
+            velocity_x, velocity_y, velocity_vx, velocity_vy,
+            thickness_x, thickness_y, thickness_thickness,
+            imgs_path, original_px=original_px,original_py=original_py, tout=tout,
+        )
 
     data_product: dict[str, np.ndarray] = dict(
             # Velocity ground truth data
@@ -238,15 +241,6 @@ def process_one_data_product(name, output_location, velocity_nc,thickness_source
             tout(f"! ABORTED \t {name}")    
             return False
             
-    if imgs_path is not None:
-        plot_contours(name, imgs_path,contours,ocean_contours,mask)
-        plot_data_product_summary(
-            name, px, py, xct, yct, nnct, bd_ud, bd_vd,
-            velocity_x, velocity_y, velocity_vx, velocity_vy,
-            thickness_x, thickness_y, thickness_thickness,
-            imgs_path, original_px=original_px,original_py=original_py, tout=tout,
-        )
-
     output_path = output_location / f"{name}_polygon.wkt"
     output_path.write_text(polygon_with_holes.wkt)
     savemat(output_location / f"{name}.mat",data_product)
