@@ -19,9 +19,11 @@ for filepath in sorted(list(template_dir.glob("*.toml"))):
         print(f" > {filepath.stem:<50} | {filepath.name}")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", required=True, help="Config file name (without .toml extension)")
-parser.add_argument("--yaml-only", action="store_true", help="Only regenerate YAML files")
-parser.add_argument("--copy-from", help="Source to copy from", default = None)
+parser.add_argument("--config"    , required=True, help="Config file name (without .toml extension)")
+parser.add_argument("--yaml-only" , action="store_true", help="Only regenerate YAML files")
+parser.add_argument("--copy-from" , help="Source to copy from", default = None)
+parser.add_argument("--data-dir"  , default = "data")
+parser.add_argument("--bbox-toml" , default = ".shelves.toml")
 args = parser.parse_args()
 
 config_file_name = args.config
@@ -29,8 +31,8 @@ mapping_path = template_dir / f"{config_file_name}.toml"
 data_product_name, time_mappings, template, boundary_smoothing = load_mappings_toml(mapping_path)
 print(f"Using Config: {config_file_name} at {mapping_path}")
 
-shelves_config_path = template_dir / ".shelves.toml"
-data_folder = cwd / "data" 
+shelves_config_path = template_dir / args.bbox_toml
+data_folder = cwd / args.data 
 product_location = cwd / "product"
 output_location = product_location / data_product_name
 output_location.mkdir(exist_ok=True, parents = True)
