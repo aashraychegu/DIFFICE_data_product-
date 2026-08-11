@@ -1,3 +1,5 @@
+shelves=["Amery", "RnFlch", "LarsenC", "Ross"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
 data_product_name = "patched_smooth_eq_weight_1_longtime"
 template = "patched_smooth_eq_weight_1_longtime.yaml"
 boundary_smoothing = 3000

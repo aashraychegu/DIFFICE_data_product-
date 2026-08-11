@@ -1,3 +1,5 @@
+shelves=["Amery", "RnFlch", "LarsenC", "Ross"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
 data_product_name = "L12N96net_100p50p10p"
 template = "L12N96net_100p50p10p.yaml"
 

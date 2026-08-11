@@ -1,3 +1,5 @@
+shelves=["Amery", "RnFlch", "LarsenC", "Ross"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
 data_product_name = "eq_weight_1"
 template = "eq_weight_1.yaml"
 boundary_smoothing = 2000
