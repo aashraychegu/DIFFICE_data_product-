@@ -1,0 +1,49 @@
+name: ~
+workflow: ice-shelf-only
+
+runtime:
+  jax_platform: gpu
+  precision: double
+  jax_enable_compilation_cache: true
+  
+data:
+  source: ~
+  sampling_counts:
+    velocity_data: 1024
+    thickness_data: 1024
+    surface_data: null
+    collocation: 2048
+    calving_front: 256
+  collocation_library_size: full
+
+model:
+  workflow: pinn
+  network:
+    depth: 8
+    width: 24
+    embedding: false
+    embed_n: 10
+    embed_std: 1.0
+
+equation:
+  name: ssa_iso
+
+loss:
+  name: iso
+  weights: [1.0, 1, 0.1]
+
+training:
+  seed: 1234
+  stages:
+    - optimizer:
+        name: kfac
+        learning_rate: null
+        damping: .nan
+        parameters:
+          preset: xpinn_joint_inversion_reference
+          log_rate: 250
+      iterations: 500000
+      adaptive_sampling: false
+
+artifacts:
+  output_dir: ~
