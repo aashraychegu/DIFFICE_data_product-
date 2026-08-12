@@ -69,8 +69,8 @@ for t1,t2 in (pbar := tqdm(times)):
     )
     del itslive_vy_on_grid, nonzero_mask
     
-    vx_max = np.nanpercentile(velocity_nc["VX"],99.9)
-    vy_max = np.nanpercentile(velocity_nc["VY"],99.9)
+    vx_max = np.nanpercentile(np.abs(velocity_nc["VX"]),99.7)
+    vy_max = np.nanpercentile(np.abs(velocity_nc["VY"]),99.7)
     velocity_nc["VX"] = velocity_nc["VX"].clip(max = vx_max)
     velocity_nc["VY"] = velocity_nc["VY"].clip(max = vy_max)
 

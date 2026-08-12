@@ -115,7 +115,7 @@ if not config_only:
         pbar.set_description("All velocity files loaded.")
 
 triplets = []
-for shelf_name, time_mapping in tqdm(product(shelf_names,time_mappings.values())):
+for shelf_name, time_mapping in tqdm(list(product(shelf_names,time_mappings.values()))):
     for velocity_file, thickness_file in product(time_mapping["velocity"],time_mapping["thickness"]):
         triplets.append((shelf_name, velocity_file, thickness_file))
 
