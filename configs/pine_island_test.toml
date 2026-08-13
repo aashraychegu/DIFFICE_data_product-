@@ -1,7 +1,7 @@
 shelves=["PineIsland"]
 data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/PIG/output-data"
-data_product_name = "patched_smooth_eq_weight_1_longtime"
-template = "patched_smooth_eq_weight_1_longtime.yaml"
+data_product_name = "pine_island_test"
+template = "pine_island_test.yaml"
 boundary_smoothing = 1500
 
 [time_mappings.1]
