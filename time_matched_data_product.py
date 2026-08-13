@@ -40,17 +40,21 @@ imgs_dir.mkdir(exist_ok=True)
 imgs_save_dir = imgs_dir / data_product_name
 
 config_only = args.yaml_only
+
 if config_only:
     for file in output_location.glob("*.yaml"):
         file.unlink(missing_ok = True)
-    copy_dir = Path(product_location / args.copy_from)
-    if copy_dir.exists():
-        for pattern in ("*.mat", "*.wkt"):
-            for file in copy_dir.glob(pattern):
-                shutil.copy2(file, output_location / file.name)
-    else:
-        print(f"Copy from directory {copy_dir} not found")
-        exit(67)
+
+    if args.copy_from is not None:
+        copy_dir = Path(product_location / args.copy_from)
+
+        if copy_dir.exists():
+            for pattern in ("*.mat", "*.wkt"):
+                for file in copy_dir.glob(pattern):
+                    shutil.copy2(file, output_location / file.name)
+        else:
+            print(f"Copy from directory {copy_dir} not found")
+            exit(67)
 
 if not config_only:
     imgs_save_dir.mkdir(exist_ok=True)
@@ -146,5 +150,5 @@ for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets,
         "data.source" : f"/oak/stanford/groups/cyaolai/AashrayChegu/data-product/product/{data_product_name}/{name}.mat",
         "name" : f"{name}",
     }
-    if Path(patches["data.source"]).exists():
+    if Path(patches["data.source"]).exists() or args.copy_from is None:
         patch_config(template = template_dir / template, patches = patches, save_path=output_location / f"{name}.yaml", )
