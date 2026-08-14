@@ -45,7 +45,6 @@ def subset_year(data, start_year, end_year):
     return mean_thickness, subset.time.values
 
 def build_dataset(mean_thickness):
-    """Bundle mean thickness with a blank 'surface' variable of the same shape."""
     mean_thickness = mean_thickness.drop_vars("time", errors="ignore")
     surface = xr.full_like(mean_thickness, fill_value=np.nan)
     ds = xr.Dataset(

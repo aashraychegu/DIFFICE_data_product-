@@ -95,7 +95,7 @@ velocity_ncs = {}
 
 if not config_only:
     # pyrefly: ignore [invalid-syntax]
-    for thickness_file in (pbar:=tqdm(thickness_files)):
+    for thickness_file in (pbar:=tqdm(thickness_files,smoothing = 0)):
         pbar.set_description(f"Loading Thickness: {thickness_file}")
         thickness_file_path = data_folder / thickness_file
         source_type = get_dataset_type(thickness_file)
@@ -104,7 +104,7 @@ if not config_only:
     else:
         pbar.set_description("All thickness files loaded.")
     # pyrefly: ignore [invalid-syntax]
-    for velocity_filename in (pbar := tqdm(velocity_files)):
+    for velocity_filename in (pbar := tqdm(velocity_files,smoothing=0)):
         pbar.set_description(f"Loading Velocity: {velocity_filename}")
         velocity_name = get_name(velocity_filename)
         velocity_path = data_folder / velocity_filename
@@ -119,14 +119,14 @@ if not config_only:
         pbar.set_description("All velocity files loaded.")
 
 triplets = []
-for shelf_name, time_mapping in tqdm(list(product(shelf_names,time_mappings.values()))):
+for shelf_name, time_mapping in tqdm(list(product(shelf_names,time_mappings.values())),smoothing=0):
     for velocity_file, thickness_file in product(time_mapping["velocity"],time_mapping["thickness"]):
         triplets.append((shelf_name, velocity_file, thickness_file))
 
 print(f"Generated {len(triplets)} triplets \n{'---'*30}")
 
 # pyrefly: ignore [invalid-syntax]
-for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets, desc = f"Processing {len(triplets)} triplets:")):
+for (shelf_name, velocity_file, thickness_source_key) in (pbar := tqdm(triplets, desc = f"Processing {len(triplets)} triplets:",smoothing=0)):
     velocity_name = get_name(velocity_file)
     thickness_name = get_name(thickness_source_key)
     name = f"{shelf_name}__{velocity_name}__{thickness_name}"
