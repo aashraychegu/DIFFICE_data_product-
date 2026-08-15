@@ -1,8 +1,8 @@
 shelves=["PineIsland"]
 data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/PIG/output-data"
-data_product_name = "pine_island_test"
-template = "pine_island_test.yaml"
-boundary_smoothing = 1500
+data_product_name = "pine_island"
+template = "pine_island.yaml"
+boundary_smoothing = 250
 
 [time_mappings.1]
 velocity = ["2009-09-15_velocity.nc"]
