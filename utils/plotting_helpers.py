@@ -53,7 +53,7 @@ def plot_data_product_summary(name, px, py, xct, yct, nnct, bd_ud, bd_vd,
     speed = np.sqrt(bd_ud.ravel()**2 + bd_vd.ravel()**2)
 
     axes[0].plot(px, py, c="black", lw=.5, label="outer boundary")
-    axes[0].scatter(original_px, original_py, s=.05, c="tab:orange", alpha=0.5,
+    axes[0].scatter(original_px, original_py, s=.05, c="tab:orange",
                     label="original points")
     sc0 = axes[0].scatter(xct, yct, s=.05, c=speed, cmap="viridis", label="ice shelf points")
     fig.colorbar(sc0, ax=axes[0], label="velocity magnitude")

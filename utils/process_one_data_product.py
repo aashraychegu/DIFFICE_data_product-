@@ -141,8 +141,8 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
 
     closed_polygon = (
         boundary_polygon
-        .buffer(boundary_smoothing_buffer,  quad_segs=64, join_style="round")
-        .buffer(-boundary_smoothing_buffer, quad_segs=64, join_style="round")
+        .buffer(boundary_smoothing_buffer,  quad_segs=5, join_style="bevel")
+        .buffer(-boundary_smoothing_buffer, quad_segs=5, join_style="bevel")
     )
 
     # combine: original geometry + only the region the closing filled
@@ -200,7 +200,7 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
     nnct = calving_front[["nx", "ny"]].values
 
     if imgs_path is not None:
-        plot_contours(name, imgs_path,contours,ocean_contours,mask)
+        # plot_contours(name, imgs_path,contours,ocean_contours,mask)
         plot_data_product_summary(
             name, px, py, xct, yct, nnct, bd_ud, bd_vd,
             velocity_x, velocity_y, velocity_vx, velocity_vy,
