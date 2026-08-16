@@ -10,7 +10,7 @@ thickness = ["2009-09-15_thickness.nc"]
 
 [time_mappings.2]
 velocity = ["2009-09-15_square-clipped_velocity.nc"]
-thickness = ["2009-09-15_square-clipped_thickness.nc"]
+thickness = ["2009-09-15_thickness.nc"]
 
 [time_mappings.3]
 velocity = ["2011-11-30_velocity.nc"]
@@ -38,7 +38,7 @@ thickness = ["2015-01-01_thickness.nc"]
 
 [time_mappings.9]
 velocity = ["2015-01-01_separated_velocity.nc"]
-thickness = ["2015-01-01_separated_thickness.nc"]
+thickness = ["2015-01-01_thickness.nc"]
 
 [time_mappings.10]
 velocity = ["2015-05-16_velocity.nc"]
@@ -54,7 +54,7 @@ thickness = ["2015-08-15_thickness.nc"]
 
 [time_mappings.13]
 velocity = ["2015-08-15_separated_velocity.nc"]
-thickness = ["2015-08-15_separated_thickness.nc"]
+thickness = ["2015-08-15_thickness.nc"]
 
 [time_mappings.14]
 velocity = ["2015-11-15_velocity.nc"]
@@ -62,7 +62,7 @@ thickness = ["2015-11-15_thickness.nc"]
 
 [time_mappings.15]
 velocity = ["2015-11-15_separated_velocity.nc"]
-thickness = ["2015-11-15_separated_thickness.nc"]
+thickness = ["2015-11-15_thickness.nc"]
 
 [time_mappings.16]
 velocity = ["2016-02-15_velocity.nc"]
@@ -138,76 +138,76 @@ thickness = ["2020-05-16_thickness.nc"]
 
 [time_mappings.34]
 velocity = ["2016-02-15_separated_velocity.nc"]
-thickness = ["2016-02-15_separated_thickness.nc"]
+thickness = ["2016-02-15_thickness.nc"]
 
 [time_mappings.35]
 velocity = ["2016-05-16_separated_velocity.nc"]
-thickness = ["2016-05-16_separated_thickness.nc"]
+thickness = ["2016-05-16_thickness.nc"]
 
 [time_mappings.36]
 velocity = ["2016-08-15_separated_velocity.nc"]
-thickness = ["2016-08-15_separated_thickness.nc"]
+thickness = ["2016-08-15_thickness.nc"]
 
 [time_mappings.37]
 velocity = ["2016-11-15_separated_velocity.nc"]
-thickness = ["2016-11-15_separated_thickness.nc"]
+thickness = ["2016-11-15_thickness.nc"]
 
 [time_mappings.38]
 velocity = ["2017-02-14_separated_velocity.nc"]
-thickness = ["2017-02-14_separated_thickness.nc"]
+thickness = ["2017-02-14_thickness.nc"]
 
 [time_mappings.39]
 velocity = ["2017-05-16_separated_velocity.nc"]
-thickness = ["2017-05-16_separated_thickness.nc"]
+thickness = ["2017-05-16_thickness.nc"]
 
 [time_mappings.40]
 velocity = ["2017-08-15_separated_velocity.nc"]
-thickness = ["2017-08-15_separated_thickness.nc"]
+thickness = ["2017-08-15_thickness.nc"]
 
 [time_mappings.41]
 velocity = ["2017-08-15_breakaway_separated_velocity.nc"]
-thickness = ["2017-08-15_breakaway_separated_thickness.nc"]
+thickness = ["2017-08-15_thickness.nc"]
 
 [time_mappings.42]
 velocity = ["2017-11-15_separated_velocity.nc"]
-thickness = ["2017-11-15_separated_thickness.nc"]
+thickness = ["2017-11-15_thickness.nc"]
 
 [time_mappings.43]
 velocity = ["2018-02-14_separated_velocity.nc"]
-thickness = ["2018-02-14_separated_thickness.nc"]
+thickness = ["2018-02-14_thickness.nc"]
 
 [time_mappings.44]
 velocity = ["2018-05-16_separated_velocity.nc"]
-thickness = ["2018-05-16_separated_thickness.nc"]
+thickness = ["2018-05-16_thickness.nc"]
 
 [time_mappings.45]
 velocity = ["2018-08-15_separated_velocity.nc"]
-thickness = ["2018-08-15_separated_thickness.nc"]
+thickness = ["2018-08-15_thickness.nc"]
 
 [time_mappings.46]
 velocity = ["2018-11-15_separated_velocity.nc"]
-thickness = ["2018-11-15_separated_thickness.nc"]
+thickness = ["2018-11-15_thickness.nc"]
 
 [time_mappings.47]
 velocity = ["2019-02-14_separated_velocity.nc"]
-thickness = ["2019-02-14_separated_thickness.nc"]
+thickness = ["2019-02-14_thickness.nc"]
 
 [time_mappings.48]
 velocity = ["2019-05-16_separated_velocity.nc"]
-thickness = ["2019-05-16_separated_thickness.nc"]
+thickness = ["2019-05-16_thickness.nc"]
 
 [time_mappings.49]
 velocity = ["2019-08-15_separated_velocity.nc"]
-thickness = ["2019-08-15_separated_thickness.nc"]
+thickness = ["2019-08-15_thickness.nc"]
 
 [time_mappings.50]
 velocity = ["2019-11-15_separated_velocity.nc"]
-thickness = ["2019-11-15_separated_thickness.nc"]
+thickness = ["2019-11-15_thickness.nc"]
 
 [time_mappings.51]
 velocity = ["2020-02-15_separated_velocity.nc"]
-thickness = ["2020-02-15_separated_thickness.nc"]
+thickness = ["2020-02-15_thickness.nc"]
 
 [time_mappings.52]
 velocity = ["2020-05-16_separated_velocity.nc"]
-thickness = ["2020-05-16_separated_thickness.nc"]
+thickness = ["2020-05-16_thickness.nc"]
