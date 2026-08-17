@@ -27,16 +27,43 @@ from scipy.io import savemat
 # pyrefly: ignore [missing-import]
 from scipy.interpolate import RBFInterpolator
 # pyrefly: ignore [missing-import]
+from scipy.spatial import cKDTree
+# pyrefly: ignore [missing-import]
 from skimage import measure
 
-def sample_rbf(da, xs, ys, query_pts, neighbors=16, kernel="thin_plate_spline"):
-    vals = da.values
-    valid = np.isfinite(vals)
-    src_pts = np.column_stack([xs[valid], ys[valid]])
-    rbf = RBFInterpolator(
-        src_pts, vals[valid], neighbors=neighbors, kernel=kernel
+def sample_rbf_velocity(da_vx, da_vy, query_pts, neighbors=16,
+                        kernel="thin_plate_spline", max_distance=5000.0):
+						
+    xs, ys = np.meshgrid(da_vx.x.values, da_vy.y.values)
+
+    vx_vals = da_vx.values
+    vy_vals = da_vy.values
+
+    valid = (
+        np.isfinite(vx_vals) & np.isfinite(vy_vals)
+        & ~((vx_vals == 0) & (vy_vals == 0))
     )
-    return rbf(query_pts)
+
+    valid_pts = np.column_stack([xs[valid], ys[valid]])
+    if len(valid_pts) < neighbors:
+        nan_out = np.full(len(query_pts), np.nan)
+        return nan_out, nan_out
+
+    tree = cKDTree(query_pts)
+    dist, _ = tree.query(valid_pts, k=1)  
+    near = dist <= max_distance
+
+    if near.sum() < neighbors:
+        nan_out = np.full(len(query_pts), np.nan)
+        return nan_out, nan_out
+
+    src_pts = valid_pts[near]
+    vals2d = np.column_stack([vx_vals[valid][near], vy_vals[valid][near]])
+
+    rbf = RBFInterpolator(src_pts, vals2d, neighbors=neighbors, kernel=kernel)
+    result = rbf(query_pts)  # (M, 2)
+
+    return result[:, 0], result[:, 1]
 
 def process_one_data_product(name, output_location, velocity_nc, thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, boundary_smoothing_buffer = 2500, tout = tqdm.write):
 
@@ -150,11 +177,10 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
 
     closed_polygon = (
         boundary_polygon
-        .buffer(boundary_smoothing_buffer,  quad_segs=5,)
-        .buffer(-boundary_smoothing_buffer, quad_segs=5,)
+        .buffer(boundary_smoothing_buffer,  quad_segs=8,join_style="mitre")
+        .buffer(-boundary_smoothing_buffer, quad_segs=8,join_style="mitre")
     )
 
-    # combine: original geometry + only the region the closing filled
     combined_polygon = unary_union([boundary_polygon, closed_polygon])
 
     px, py = combined_polygon.exterior.xy
@@ -167,14 +193,17 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
         clipped_velocity_nc["VX"].y.values,
     )
     query_pts = np.column_stack([px, py])
-
-    boundary_vx = sample_rbf(clipped_velocity_nc["VX"], xs, ys, query_pts)
-    boundary_vy = sample_rbf(clipped_velocity_nc["VY"], xs, ys, query_pts)
+    
+    boundary_vx, boundary_vy = sample_rbf_velocity(
+        clipped_velocity_nc["VX"],
+        clipped_velocity_nc["VY"],
+        query_pts,
+    )
 
     ocean_mask = clipped_velocity_nc["MASK"] == 0
 
     ocean_contours = measure.find_contours(ocean_mask.values.astype(float), level=.01)
-
+    
     ocean_boundary_contour = max(ocean_contours, key=len)
     o_rows, o_cols = ocean_boundary_contour[:, 0], ocean_boundary_contour[:, 1]
     obcx = np.interp(o_cols, np.arange(len(x_coords)), x_coords)
