@@ -12,7 +12,6 @@ from shapely import Polygon, MultiPolygon, make_valid
 from shapely.geometry import LineString
 from shapely.ops import unary_union
 
-
 # pyrefly: ignore [missing-import]
 import matplotlib.pyplot as plt
 # pyrefly: ignore [missing-import]
@@ -24,9 +23,20 @@ import numpy as np
 # pyrefly: ignore [missing-import]
 import geopandas as gpd
 # pyrefly: ignore [missing-import]
-from scipy.io import savemat 
+from scipy.io import savemat
+# pyrefly: ignore [missing-import]
+from scipy.interpolate import RBFInterpolator
 # pyrefly: ignore [missing-import]
 from skimage import measure
+
+def sample_rbf(da, xs, ys, query_pts, neighbors=16, kernel="thin_plate_spline"):
+    vals = da.values
+    valid = np.isfinite(vals)
+    src_pts = np.column_stack([xs[valid], ys[valid]])
+    rbf = RBFInterpolator(
+        src_pts, vals[valid], neighbors=neighbors, kernel=kernel
+    )
+    return rbf(query_pts)
 
 def process_one_data_product(name, output_location, velocity_nc, thickness_source, thickness_flatten_function, exp_path = None, bbox = None, imgs_path = None, buffersize = .1, boundary_smoothing_buffer = 2500, tout = tqdm.write):
 
@@ -38,7 +48,6 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
     extent_x, extent_y = maxx - minx, maxy-miny
     buffer_x, buffer_y = extent_x * buffersize , extent_y * buffersize
     maxx, minx, maxy, miny = maxx + buffer_x, minx - buffer_x, maxy + buffer_y, miny - buffer_y
-
     clipped_velocity_nc = velocity_nc.rio.clip_box(minx=minx, miny=miny, maxx=maxx, maxy=maxy,crs = "EPSG:3031")
 
     mask = clipped_velocity_nc["MASK"] == 2
@@ -141,8 +150,8 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
 
     closed_polygon = (
         boundary_polygon
-        .buffer(boundary_smoothing_buffer,  quad_segs=5, join_style="bevel")
-        .buffer(-boundary_smoothing_buffer, quad_segs=5, join_style="bevel")
+        .buffer(boundary_smoothing_buffer,  quad_segs=5,)
+        .buffer(-boundary_smoothing_buffer, quad_segs=5,)
     )
 
     # combine: original geometry + only the region the closing filled
@@ -153,16 +162,14 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
     py = np.asarray(py)[:-1]
     normals = compute_normals(px, py)
 
-    px_da = xr.DataArray(px, dims="points")
-    py_da = xr.DataArray(py, dims="points")
-    boundary_vx = clipped_velocity_nc["VX"].interp(
-        x=px_da, y=py_da, method="pchip",
-        kwargs={"fill_value": None, "bounds_error": False},
-    ).values
-    boundary_vy = clipped_velocity_nc["VY"].interp(
-        x=px_da, y=py_da, method="pchip",
-        kwargs={"fill_value": None, "bounds_error": False},
-    ).values
+    xs, ys = np.meshgrid(
+        clipped_velocity_nc["VX"].x.values,
+        clipped_velocity_nc["VX"].y.values,
+    )
+    query_pts = np.column_stack([px, py])
+
+    boundary_vx = sample_rbf(clipped_velocity_nc["VX"], xs, ys, query_pts)
+    boundary_vy = sample_rbf(clipped_velocity_nc["VY"], xs, ys, query_pts)
 
     ocean_mask = clipped_velocity_nc["MASK"] == 0
 

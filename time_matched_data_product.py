@@ -8,6 +8,7 @@ from utils import load_netcdf, flatten_netcdf, load_parquet, flatten_parquet,  p
 # pyrefly: ignore [missing-import]
 import rioxarray as rxr
 # pyrefly: ignore [missing-import]
+import numpy as np
 import argparse
 import shutil
 
@@ -103,15 +104,31 @@ if not config_only:
         thickness_datasources[thickness_file] = dict(source = source, function = method_reference[source_type]["flatten"])
     else:
         pbar.set_description("All thickness files loaded.")
+
     # pyrefly: ignore [invalid-syntax]
     for velocity_filename in (pbar := tqdm(velocity_files,smoothing=0)):
         pbar.set_description(f"Loading Velocity: {velocity_filename}")
         velocity_name = get_name(velocity_filename)
         velocity_path = data_folder / velocity_filename
-        velocity_nc = rxr.open_rasterio(velocity_path,decode_coords="all",lock=False)[["VX","VY","MASK"]]
-        velocity_nc["VX"] = velocity_nc["VX"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
-        velocity_nc["VY"] = velocity_nc["VY"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
-        velocity_nc["MASK"] = velocity_nc["MASK"].rio.write_crs("EPSG:3031").squeeze("band", drop=True)
+        velocity_nc = rxr.open_rasterio(velocity_path,lock=False)[["VX","VY","MASK"]]
+
+        velocity_nc["VX"] = (
+            velocity_nc["VX"]
+            .rio.write_crs("EPSG:3031")
+            .squeeze("band", drop=True)
+            .rio.write_nodata(np.nan)
+        )
+        velocity_nc["VY"] = (
+            velocity_nc["VY"]
+            .rio.write_crs("EPSG:3031")
+            .squeeze("band", drop=True)
+            .rio.write_nodata(np.nan)
+        )
+        velocity_nc["MASK"] = (
+            velocity_nc["MASK"]
+            .rio.write_crs("EPSG:3031")
+            .squeeze("band", drop=True)
+        )
 
         velocity_ncs[velocity_name] = velocity_nc.rio.write_crs("EPSG:3031")
         
