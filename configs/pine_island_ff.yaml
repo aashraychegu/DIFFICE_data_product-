@@ -20,7 +20,7 @@ model:
   workflow: pinn
   network:
     depth: 6
-    width: 30
+    width: 32
     embedding: true
     embed_n: 64
     embed_std: 1.0
