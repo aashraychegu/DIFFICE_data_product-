@@ -1,5 +1,5 @@
 shelves=["PineIsland"]
-data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/PIG/output-data"
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data_prep_PIG/output-data"
 data_product_name = "pine_island_comprehensive"
 template = "pine_island_comprehensive.yaml"
 boundary_smoothing = 250
