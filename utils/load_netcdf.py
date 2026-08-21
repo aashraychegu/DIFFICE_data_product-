@@ -12,10 +12,9 @@ def load_netcdf(path: Path):
 def flatten_netcdf(nc, minx, miny, maxx, maxy):
     nc = nc.rio.clip_box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
     stacked = nc.stack(points=("y", "x"))
-    stacked = stacked.dropna(dim="points", subset=["thickness"], how="all")
-
-    stacked = stacked.where(stacked["thickness"] > (-32767.0+1), drop=True)
-    stacked = stacked.where(stacked["thickness"] > (-9999+1), drop=True)
+    
+    stacked = stacked.where(stacked["thickness"] > -9998)
+    stacked = stacked.dropna(dim="points", subset=["thickness", "surface"], how="any")
 
     return {
         "x": stacked["x"].values,
