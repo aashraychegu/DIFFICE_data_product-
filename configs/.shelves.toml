@@ -2,25 +2,32 @@
 # bbox = [max_x, min_x, max_y, min_y]
 
 [Amery]
+# bbox = [max_x, min_x, max_y, min_y]
 bbox = [2241750.0,1682250.0,839750.0,614750.0,]
 res = 750
 
 [RnFlch]
+# bbox = [max_x, min_x, max_y, min_y]
 bbox = [-526750.0,-1512250.0,1036250.0,134750.0,]
 res = 750
 
 [LarsenC]
+# bbox = [max_x, min_x, max_y, min_y]
 bbox = [-1999750.0,-2338750.0,1293750.0,981750.0,]
 res = 750
 
 [LarsenD]
+# bbox = [max_x, min_x, max_y, min_y]
 bbox = [-1611250.0,-2000250.0,1084250.0,905750.0,]
 res = 750
 
 [Ross]
+# bbox = [max_x, min_x, max_y, min_y]
 bbox = [397750.0,-593250.0,-434750.0,-1352250.0,]
 res = 750
 
 [PineIsland]
-bbox=[-349750.0, -1639750.0, -240250.0, -1540250.0, ]
-res = 250
+# bbox = [max_x, min_x, max_y, min_y]
+bbox = [-1540000.0, -1640000.0, -240000.0, -350000.0]
+# bbox=[-349750.0, -1639750.0, -240250.0, -1540250.0, ]
+res = 150
