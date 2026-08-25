@@ -1,0 +1,9 @@
+shelves=["Ross"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
+data_product_name = "ross_interp_test"
+template = "ross_ff.yaml"
+boundary_smoothing = 3000
+
+[time_mappings.1]
+velocity = ["patched_velocity_2020-2022.nc"]
+thickness = ["interp_thickness_2020-2022.nc"]

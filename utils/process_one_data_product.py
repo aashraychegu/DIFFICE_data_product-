@@ -182,6 +182,12 @@ def process_one_data_product(name, output_location, velocity_nc, thickness_sourc
     )
 
     combined_polygon = unary_union([boundary_polygon, closed_polygon])
+    if isinstance(combined_polygon, MultiPolygon):
+        combined_polygon = unary_union(
+            [g.buffer(1e-6) for g in combined_polygon.geoms]
+        ).buffer(-1e-6)
+        if isinstance(combined_polygon, MultiPolygon):
+            combined_polygon = max(combined_polygon.geoms, key=lambda p: p.area)
 
     px, py = combined_polygon.exterior.xy
     px = np.asarray(px)[:-1]

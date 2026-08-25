@@ -1,6 +1,7 @@
 from pathlib import Path
 # pyrefly: ignore [missing-import]
 import rioxarray as rxr
+import numpy as np
 
 def load_netcdf(path: Path): 
     dataset = rxr.open_rasterio(path,lock=False)[["surface","thickness"]]
@@ -12,10 +13,9 @@ def load_netcdf(path: Path):
 def flatten_netcdf(nc, minx, miny, maxx, maxy):
     nc = nc.rio.clip_box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
     stacked = nc.stack(points=("y", "x"))
-    
     stacked = stacked.where(stacked["thickness"] > -9998)
-    stacked = stacked.dropna(dim="points", subset=["thickness", "surface"], how="any")
-
+    # NOTE: SURFACE CAN BE ALL NAN - DO NOT ADD IT TO ```subset=[...]```
+    stacked = stacked.dropna(dim="points", subset=["thickness"], how="any")
     return {
         "x": stacked["x"].values,
         "y": stacked["y"].values,
