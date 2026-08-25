@@ -1,7 +1,7 @@
 shelves=["Ross"]
 data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
-data_product_name = "ross_eq1_longtime"
-template = "ross_eq1_longtime.yaml"
+data_product_name = "ross_ff"
+template = "ross_ff.yaml"
 boundary_smoothing = 3000
 
 [time_mappings.1]

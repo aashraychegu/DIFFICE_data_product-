@@ -1,0 +1,21 @@
+shelves=["Ross"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data-product/data"
+data_product_name = "ross_ff"
+template = "ross_ff.yaml"
+boundary_smoothing = 3000
+
+[time_mappings.1]
+velocity = ["patched_velocity_1995-2001.nc", "velocity_1995-2001.nc",]
+thickness = ["thickness_1995-2001.nc", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.2]
+velocity = ["patched_velocity_2007-2009.nc", "velocity_2007-2009.nc"]
+thickness = ["thickness_2007-2009.nc", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.3]
+velocity = ["patched_velocity_2014-2017.nc", "velocity_2014-2017.nc"]
+thickness = ["thickness_2014-2017.nc", "bedmap3.parquet", "thickness_bm4.nc"]
+
+[time_mappings.4]
+velocity = ["patched_velocity_2020-2022.nc", "velocity_2020-2022.nc"]
+thickness = ["interp_thickness_2020-2022.nc", "thickness_bm4.nc"]
