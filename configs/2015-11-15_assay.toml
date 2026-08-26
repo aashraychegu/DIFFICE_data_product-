@@ -1,0 +1,29 @@
+shelves=["PineIsland"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data_prep_PIG/output-data"
+data_product_name = "2015-11-15_assay"
+template = "2015-11-15_assay.yaml"
+boundary_smoothing = 250
+
+[time_mappings.1]
+velocity = ["2015-11-15_IJ-thickness_velocity.nc"]
+thickness = ["2015-11-15_IJ-thickness_thickness.nc"]
+
+[time_mappings.2]
+velocity = ["2015-11-15_IJ-thickness_thresholded-1000_velocity.nc"]
+thickness = ["2015-11-15_IJ-thickness_thresholded-1000_thickness.nc"]
+
+[time_mappings.3]
+velocity = ["2015-11-15_BM4-thickness_velocity.nc"]
+thickness = ["2015-11-15_BM4-thickness_thickness.nc"]
+
+[time_mappings.4]
+velocity = ["2015-11-15_BM4-thickness_thresholded-500_velocity.nc"]
+thickness = ["2015-11-15_BM4-thickness_thresholded-500_thickness.nc"]
+
+[time_mappings.5]
+velocity = ["2015-11-15_BM4-thickness_thresholded-1000_velocity.nc"]
+thickness = ["2015-11-15_BM4-thickness_thresholded-1000_thickness.nc"]
+
+[time_mappings.6]
+velocity = ["2015-11-15_BM4-thickness_thresholded-1500_velocity.nc"]
+thickness = ["2015-11-15_BM4-thickness_thresholded-1500_thickness.nc"]
