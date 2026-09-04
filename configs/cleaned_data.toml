@@ -1,0 +1,65 @@
+shelves=["PineIsland"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data_prep_PIG/output-data"
+data_product_name = "cleaned_data"
+template = "cleaned_data.yaml"
+boundary_smoothing = 250
+
+[time_mappings.1]
+velocity = ["cleaned-2015-08-15_velocity.nc"]
+thickness = ["cleaned-2015-08-15_thickness.nc"]
+
+[time_mappings.2]
+velocity = ["BM4_cleaned-2015-11-15_velocity.nc"]
+thickness = ["BM4_cleaned-2015-11-15_thickness.nc"]
+
+[time_mappings.3]
+velocity = ["JT_cleaned-2015-11-15_velocity.nc"]
+thickness = ["JT_cleaned-2015-11-15_thickness.nc"]
+
+[time_mappings.4]
+velocity = ["cleaned-2016-02-15_velocity.nc"]
+thickness = ["cleaned-2016-02-15_thickness.nc"]
+
+[time_mappings.5]
+velocity = ["cleaned-2017-08-15_velocity.nc"]
+thickness = ["cleaned-2017-08-15_thickness.nc"]
+
+[time_mappings.6]
+velocity = ["cleaned-2017-11-15_velocity.nc"]
+thickness = ["cleaned-2017-11-15_thickness.nc"]
+
+[time_mappings.7]
+velocity = ["cleaned-2018-05-16_velocity.nc"]
+thickness = ["cleaned-2018-05-16_thickness.nc"]
+
+[time_mappings.8]
+velocity = ["cleaned-2018-11-15_velocity.nc"]
+thickness = ["cleaned-2018-11-15_thickness.nc"]
+
+[time_mappings.9]
+velocity = ["2014JT_cleaned-rignot-2014-2017_velocity.nc"]
+thickness = ["2014JT_cleaned-rignot-2014-2017_thickness.nc"]
+
+[time_mappings.10]
+velocity = ["2015JT_cleaned-rignot-2014-2017_velocity.nc"]
+thickness = ["2015JT_cleaned-rignot-2014-2017_thickness.nc"]
+
+[time_mappings.11]
+velocity = ["2016JT_cleaned-rignot-2014-2017_velocity.nc"]
+thickness = ["2016JT_cleaned-rignot-2014-2017_thickness.nc"]
+
+[time_mappings.12]
+velocity = ["2017JT_cleaned-rignot-2014-2017_velocity.nc"]
+thickness = ["2017JT_cleaned-rignot-2014-2017_thickness.nc"]
+
+[time_mappings.13]
+velocity = ["2017BM4_cleaned-rignot-2014-2017_velocity.nc"]
+thickness = ["2017BM4_cleaned-rignot-2014-2017_thickness.nc"]
+
+[time_mappings.14]
+velocity = ["cleaned-rignot-2020-2022_velocity.nc"]
+thickness = ["cleaned-rignot-2020-2022_thickness.nc"]
+
+[time_mappings.15]
+velocity = ["smoothed-2007-2009_2009-09-15_velocity.nc"]
+thickness = ["smoothed-2007-2009_2009-09-15_thickness.nc"]
