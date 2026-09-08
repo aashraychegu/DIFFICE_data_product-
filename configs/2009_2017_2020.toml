@@ -1,0 +1,49 @@
+shelves=["PineIsland"]
+data_dir="/oak/stanford/groups/cyaolai/AashrayChegu/data_prep_PIG/output-data"
+data_product_name = "2009_2017_2020"
+template = "2009_2017_2020.yaml"
+boundary_smoothing = 250
+
+[time_mappings.1]
+velocity = ["smoothed-2007-2009_2009-09-15_velocity.nc"]
+thickness = ["smoothed-2007-2009_2009-09-15_thickness.nc"]
+
+[time_mappings.2]
+velocity = ["BM4_cleaned-2015-11-15_velocity.nc"]
+thickness = ["BM4_cleaned-2015-11-15_thickness.nc"]
+
+[time_mappings.3]
+velocity = ["JT_cleaned-2015-11-15_velocity.nc"]
+thickness = ["JT_cleaned-2015-11-15_thickness.nc"]
+
+[time_mappings.4]
+velocity = ["cleaned-2017-08-15_velocity.nc"]
+thickness = ["cleaned-2017-08-15_thickness.nc"]
+
+[time_mappings.5]
+velocity = ["cleaned-2017-11-15_velocity.nc"]
+thickness = ["cleaned-2017-11-15_thickness.nc"]
+
+[time_mappings.6]
+velocity = ["BM4-cleaned-2017-08-15_velocity.nc"]
+thickness = ["BM4-cleaned-2017-08-15_thickness.nc"]
+
+[time_mappings.7]
+velocity = ["BM4-cleaned-2017-11-15_velocity.nc"]
+thickness = ["BM4-cleaned-2017-11-15_thickness.nc"]
+
+[time_mappings.8]
+velocity = ["2017-08-15_velocity.nc"]
+thickness = ["2017-08-15_thickness.nc"]
+
+[time_mappings.9]
+velocity = ["2017-11-15_velocity.nc"]
+thickness = ["2017-11-15_thickness.nc"]
+
+[time_mappings.10]
+velocity = ["2020-05-16_velocity.nc"]
+thickness = ["2020-05-16_thickness.nc"]
+
+[time_mappings.11]
+velocity = ["cleaned-rignot-2020-2022_velocity.nc"]
+thickness = ["cleaned-rignot-2020-2022_thickness.nc"]
